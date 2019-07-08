@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link href="https://unpkg.com/ionicons@4.5.5/dist/css/ionicons.min.css" rel="stylesheet">
+</head>
+<body>
+
+<!--Menu de navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" href="#">
+        <img src="../img/mainIco.svg" width="30" height="30">
+    </a>
+    <a class="navbar-brand" href="#">
+        <h5 class="titlePage">CoursesFaciles</h5>
+    </a>
+    <div class="line" id="gestIcons">
+<!--
+        <img id="moveBtn" src="../img/move.svg" width="40" height="40" ondrag="document.body.setSt">
+-->
+        <button type="button" id="addList" class="tip btn" onclick="addList()">
+            <img class="btnClick" src="../img/shopping-cart.svg" width="40" height="40">
+            <span><div class="tipText">Ajouter une liste</div></span>
+        </button>
+
+        <button type="button" id="clearLists" class="tip btn">
+            <img class="btnClick" src="../img/garbage.svg" width="40" height="40">
+            <span><div class="tipText">Supprimer les listes</div></span>
+        </button>
+
+        <button type="button" id="exitBtn" class="btn tip" onclick="exitApp()">
+            <img class="btnClick" src="../img/logout.svg" width="40" height="40">
+            <span><div class="tipText">Quitter l'application</div></span>
+        </button>
+
+    </div>
+</nav>
+
+<div id="corps">
+
+  <div id="conection">
+    <!-- Login ou mdp incorrecte-->
+    <div class="alert alert-dismissible alert-danger" id="cptInexist">
+    <!--
+        <button type="button" class="close btnClick" data-dismiss="alert">&times;</button>
+    -->
+        <h4 class="alert-heading">Ce compte n'existe pas</h4>
+        <p class="mb-0">Veuillez vérifier votre pseudo.</p>
+    </div>
+    <div class="alert alert-dismissible alert-danger" id="badPwd">
+        <!--<button type="button" class="close btnClick" data-dismiss="alert">&times;</button>-->
+        <h4 class="alert-heading">Erreur de mot de passe</h4>
+        <p class="mb-0">Veuillez vérifier votre mot de passe.</p>
+    </div>
+    <!-- Pseudo déjà utilisé-->
+    <div class="alert alert-dismissible alert-warning btnClick" id="userAlreadyExist">
+    <!--
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+    -->
+        <h4 class="alert-heading">Désolé..</h4>
+        <p class="mb-0">Ce pseudo est déjà utilisé par un autre <a href="#" class="alert-link">utilisateur</a>.</p>
+    </div>
+    <!--Login ou mdp vide-->
+    <div class="alert alert-dismissible alert-danger" id="voidFields">
+        <!--<button type="button" class="close btnClick" data-dismiss="alert">&times;</button>-->
+        <h4 class="alert-heading">Champs vides</h4>
+        <p class="mb-0">Vous êtes obligé de rentrer un identifiant ou un mot de passe.</p>
+    </div>
+
+    <!-- Connection ou creation de compte-->
+    <div class="line">
+
+        <div class="card border-primary mb-3" style="max-width: 20rem;">
+            <form name="formauth" id="formauth">
+
+                <div class="card-header"><h4>Authentification</h4></div>
+                <div class="card-body">
+                    <p class="card-text">
+                        <div class="form-group">
+                            <label class="col-form-label" for="authId">Pseudo</label>
+                            <!--class += is-valid SI bon SINON class += is-invalid -->
+                            <input type="text" class="form-control inputClick" placeholder="Pseudo" id="authId" onfocus="clearErrors()">
+                        </div>
+                    </p>
+                    <p class="card-text">
+                        <div class="form-group">
+                            <label for="authpwd">Mot de passe</label>
+                            <!--class += is-valid SI bon SINON class += is-invalid -->
+                            <input type="password" class="form-control inputClick" id="authpwd" placeholder="mot_de_passe"  onfocus="clearErrors()">
+                        </div>
+                    </p>
+                    <p class="card-text">
+                        <button type="submit" class="btn btn-outline-success btnClick">Connexion</button>&nbsp;
+                        <button type="reset" class="btn btn-outline-danger btnClick">&nbsp;&nbsp;Annuler&nbsp;&nbsp;</button>
+                    </p>
+                </div>
+
+            </form>
+        </div>
+
+
+        <div class="card border-primary mb-3" style="max-width: 20rem;">
+
+            <form name="formNewAccount" id="formNewAccount">
+
+                <div class="card-header"><h4>Créer un compte</h4></div>
+                <div class="card-body">
+                    <p class="card-text">
+                    <div class="form-group">
+                        <label class="col-form-label" for="newId">Pseudo</label>
+                        <!--class += is-valid SI bon SINON class += is-invalid -->
+                        <input type="text" class="form-control inputClick" placeholder="Pseudo" id="newId"  onfocus="clearErrors()">
+                    </div>
+                    </p>
+                    <p class="card-text">
+                    <div class="form-group">
+                        <label for="newpwd">Mot de passe</label>
+                        <!--class += is-valid SI bon SINON class += is-invalid -->
+                        <input type="password" class="form-control inputClick" id="newpwd" placeholder="mot_de_passe"  onfocus="clearErrors()">
+                    </div>
+                    </p>
+                    <p class="card-text">
+                        <button type="submit" class="btn btn-outline-success btnClick">&nbsp;&nbsp;Créer&nbsp;&nbsp;</button>&nbsp;
+                        <button type="reset" class="btn btn-outline-danger btnClick">&nbsp;Réinitialiser&nbsp;</button>
+                    </p>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+  </div>
+
+  <!-- Pas encore de listes de courses -->
+  <div class="alert alert-dismissible alert-info" id="noShoppingLists">
+  <!--
+      <button type="button" class="close btnClick" data-dismiss="alert">&times;</button>
+  -->
+      <h4 class="alert-heading">Vous n'avez pas encore de liste de course</h4>
+      <p class="mb-0">Voulez vous <a onclick="addList()" class="alert-link btnClick">en ajouter une</a> ?</p>
+  </div>
+
+  <ul class="list-group">
+
+  </ul>
+</div>
+
+
+
+</body>
+
+<script src="../extraJs/renderer.js"></script>
+</html>

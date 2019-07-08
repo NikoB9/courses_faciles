@@ -1,0 +1,133 @@
+/*Déplacer la fenêtre*/
+body {
+    -webkit-app-region: drag;
+}
+
+.navbar{
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+}
+
+#corps{
+  padding-top: 80px;
+}
+
+nav{
+     display: flex !important;
+     flex-direction: row !important;
+     justify-content: left !important;
+ }
+
+.alert{
+    margin: 5%;
+    display: none;
+}
+
+.line{
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+}
+
+.card{
+    margin: 3%;
+}
+
+#gestIcons{
+    position: fixed;
+    right: 8px;
+    color: #FFF;
+}
+
+#exitBtn{
+    margin-top: 3px!important;
+}
+
+#exitBtn:hover, #moveBtn:hover{
+    cursor: pointer;
+}
+
+.inputClick{
+    -webkit-app-region: no-drag;
+    cursor: text;
+}
+
+.btnClick{
+    -webkit-app-region: no-drag;
+    cursor: pointer;
+}
+
+.titlePage{
+    margin: 5px;
+}
+
+button{
+    background: transparent !important;
+}
+
+button:hover{
+    background: rgba(103, 103, 103, 0.26) !important;
+}
+
+#addList, #clearLists{
+  display: none;
+}
+
+/******ADD LIST STYLE******/
+
+#formAddList{
+    margin-left: 5%;
+    width: 90%;
+}
+
+#inputAddList{
+    width: 70%;
+}
+#AddListBtn{
+  margin-left: 5%;
+  width: 30%;
+}
+
+/******COLORED ICONS hover****/
+#addList:hover{
+    fill: #00efb2 !important;
+}
+
+#clearLists:hover {
+    fill: grey;
+}
+
+#exitBtn:hover{
+    fill: red;
+}
+
+
+
+/***TOOLTIP : Image accueil****/
+.tipText{
+    margin: 2px;
+}
+
+button.tip:hover {
+    cursor: pointer;
+    position: relative;
+}
+
+button.tip span {
+    display: none;
+    z-index: 9999;
+}
+
+button.tip:hover span {
+    border: #c0c0c0 1px dotted;
+    display: block;
+    z-index: 9999999;
+    background: #375a7f;
+    left: -97px;
+    margin: 10px;
+    width: 80px;
+    position: absolute;
+    top: -5px;
+    border-radius: 10px;
+}

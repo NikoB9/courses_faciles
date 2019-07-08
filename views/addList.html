@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+
+    <!--Menu de navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">
+            <img src="../img/bill.svg" width="30" height="30">
+        </a>
+        <a class="navbar-brand" href="#">
+            <h5 class="titlePage">Ajout d'une liste de course</h5>
+        </a>
+        <div class="line" id="gestIcons">
+            <button type="button" class="btn tip" onclick="exitApp()">
+                <img class="btnClick" id="exitWindow" src="../img/close.svg" width="40" height="40">
+                <span><div class="tipText">Fermer la fenêtre</div></span>
+            </button>
+        </div>
+    </nav>
+
+    <div id="corps">
+      <form>
+          <div class="form-group" id="formAddList">
+
+              <div class="nav">
+                <div class="inputAddList">
+                  <label class="col-form-label col-form-label-lg" for="nameList">Nom de la liste</label>
+                  <input class="form-control form-control-lg inputClick" type="text" placeholder="courses quotidiennes" id="nameList">
+                  <label class="col-form-label col-form-label-lg" for="devise">Devise</label>
+                  <input class="form-control form-control-lg inputClick" type="text" placeholder="€" id="devise">
+                </div>
+                  <button type="submit" id="AddListBtn" class="btn btn-info btnClick"><img src="../img/check.svg" width="35" height="35"></button>
+              </div>
+          </div>
+      </form>
+    </div>
+
+
+
+    <script>
+        const electron = require('electron');
+        const {ipcRenderer} = electron;
+
+        const form = document.querySelector('form');
+        form.addEventListener('submit', submitForm);
+
+        function submitForm(e){
+            e.preventDefault();
+            const list = document.querySelector('#nameList').value;
+            const devise = document.querySelector('#devise').value;
+            ipcRenderer.send('list:add', list, devise);
+        }
+
+        const closeBtn = document.querySelector('#exitWindow');
+        closeBtn.addEventListener('click', closeThisWindow);
+
+        function closeThisWindow(e) {
+            e.preventDefault();
+            ipcRenderer.send('closeAddListWindow');
+        }
+    </script>
+</body>
+</html>

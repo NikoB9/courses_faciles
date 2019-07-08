@@ -1,0 +1,74 @@
+{
+	"Users": [{
+		"login" : "NikoB9",
+		"password":  "B9Niko",
+		"shoppingLists": 
+		[{
+			"name": "Courses quotidiennes", 
+			"money_unit": "€", 
+			"categories" : 
+			[{
+				"name": "Fruits",
+				"ingredients" :
+				[{
+					"name": "bananes",
+					"quantity": 5,
+					"unit": "unité",
+					"max_price": 1.6 
+				},
+				{
+					"name": "clémentines",
+					"quantity": 20,
+					"unit": "unité",
+					"max_price": 3.64 
+				},{
+					"name": "kiwi",
+					"quantity": 10,
+					"unit": "unité",
+					"max_price": 4 
+				}]
+			},{
+				"name": "laitages",
+				"ingredients" :
+				[{
+					"name": "yaourts",
+					"quantity": 20,
+					"unit": "unité",
+					"max_price": 5 
+				},
+				{
+					"name": "chèvre",
+					"quantity": 1,
+					"unit": "unité",
+					"max_price": 1.4 
+				}]
+			}]
+		},{
+
+			"name": "Courses hebdomadaire", 
+			"money_unit": "$",
+			"categories" : 
+			[{
+				"name": "Légumes",
+				"ingredients" :
+				[{
+					"name": "poivrons",
+					"quantity": 3,
+					"unit": "unité",
+					"max_price": 1.8 
+				},
+				{
+					"name": "courgettes",
+					"quantity": 5,
+					"unit": "unité",
+					"max_price": 4 
+				},{
+					"name": "épinards",
+					"quantity": 5,
+					"unit": "kg",
+					"max_price": 4 
+				}]
+			}]
+		}]
+	}]
+}
