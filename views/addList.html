@@ -29,15 +29,24 @@
       <form>
           <div class="form-group" id="formAddList">
 
-              <div class="nav">
-                <div class="inputAddList">
-                  <label class="col-form-label col-form-label-lg" for="nameList">Nom de la liste</label>
-                  <input class="form-control form-control-lg inputClick" type="text" placeholder="courses quotidiennes" id="nameList">
-                  <label class="col-form-label col-form-label-lg" for="devise">Devise</label>
-                  <input class="form-control form-control-lg inputClick" type="text" placeholder="€" id="devise">
-                </div>
-                  <button type="submit" id="AddListBtn" class="btn btn-info btnClick"><img src="../img/check.svg" width="35" height="35"></button>
-              </div>
+              <!--<div class="nav">
+                <div class="inputAddList">-->
+                <label class="col-form-label col-form-label-lg" for="nameList">Nom de la liste</label>
+                  <div class="form-row">
+                      <div class="form-group col-12">
+                          <input class="form-control form-control-lg inputClick" type="text" placeholder="courses quotidiennes" id="nameList">
+                      </div>
+                  </div>
+                <label class="col-form-label col-form-label-lg" for="devise">Devise</label>
+                  <div class="form-row">
+                      <div class="form-group col-9">
+                          <input class="form-control form-control-lg inputClick" type="text" placeholder="€" id="devise">
+                      </div>
+                      <div class="form-group col-3">
+                          <button type="submit" id="AddListBtn" class="btn btn-info btnClick"><img src="../img/check.svg" width="35" height="35"></button>
+                      </div>
+                  </div>
+              <!--</div>-->
           </div>
       </form>
     </div>

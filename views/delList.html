@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+
+    <!--Menu de navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">
+            <img src="../img/bill.svg" width="30" height="30">
+        </a>
+        <a class="navbar-brand" href="#">
+            <h5 class="titlePage">Suppression d'une liste de course</h5>
+        </a>
+        <div class="line" id="gestIcons">
+            <button type="button" class="btn tip" onclick="exitApp()">
+                <img class="btnClick" id="exitWindow" src="../img/close.svg" width="40" height="40">
+                <span><div class="tipText">Fermer la fenêtre</div></span>
+            </button>
+        </div>
+    </nav>
+
+    <div id="corps">
+      <form>
+          <div class="form-group" id="formDelList" style="text-align: center">
+
+                    <label class="col-form-label col-form-label-lg" for="nameList">Voulez-vous supprimer la liste&nbsp;</label>
+                    <b>"<span id="nameList"></span>"</b>&nbsp;?
+                    <div class="form-row">
+                        <div class="form-group col-12">
+                            <button type="submit" id="EditListBtn" class="btn btn-danger btnClick">SUPPRIMER</button>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="idListe">
+          </div>
+      </form>
+    </div>
+
+
+
+    <script>
+        //DECLARATION D USAGE
+        const electron = require('electron');
+        const {ipcRenderer} = electron;
+
+        //Dire au main que la fenêtre a fini de charger
+        ipcRenderer.send('did-finish-load');
+        //REMPLISSAGE DU FORMULAIRE
+        ipcRenderer.on('list:params', function (event, id, name) {
+            document.getElementById('nameList').innerText = name;
+            document.getElementById('idListe').value = id;
+        })
+
+        //TRAITEMENT DU FORMULAIRE
+        const form = document.querySelector('form');
+        form.addEventListener('submit', submitForm);
+
+        function submitForm(e){
+            e.preventDefault();
+            const id = document.querySelector('#idListe').value;
+            ipcRenderer.send('list:remove', id);
+        }
+
+        const closeBtn = document.querySelector('#exitWindow');
+        closeBtn.addEventListener('click', closeThisWindow);
+
+        function closeThisWindow(e) {
+            e.preventDefault();
+            ipcRenderer.send('closeRemoveListWindow');
+        }
+    </script>
+</body>
+</html>

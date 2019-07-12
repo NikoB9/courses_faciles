@@ -23,6 +23,25 @@ const {ipcRenderer} = electron;
  function addList() {
  	ipcRenderer.send('newList');
  }
+
+//Suppression des listes
+function delLists() {
+    ipcRenderer.send('delLists');
+}
+
+//Suppression d'1 liste
+function delOneList(idListe) {
+    ipcRenderer.send('delOneList', idListe);
+}
+
+//Edition d'1 liste
+function editOneList(idListe) {
+    ipcRenderer.send('editOneList', idListe);
+}
+
+ipcRenderer.on('alerte', function (e, message) {
+    alert(message);
+})
 /************Connexion************/
 //envoie des infos de connexions
 const formConnection = document.getElementById('formauth');
@@ -39,26 +58,76 @@ function submitFormConnection(e){
 ipcRenderer.on('connection:true', function(e, user) {
 	const btnAddList = document.getElementById('addList');
 	const btnClearLists = document.getElementById('clearLists');
-  const conectArea = document.getElementById('conection');
+  	const conectArea = document.getElementById('conection');
 	const firstShoppingList = document.getElementById('noShoppingLists');
 
-  //desactiver la zone de connexion
+  	//desactiver la zone de connexion
 	conectArea.style.display = "none";
 
 	//ACTIVATION DES BOUTONS
 	btnAddList.style.display = "block";
 	btnClearLists.style.display = "block";
 
-  console.log(user);
+  //console.log(user);
+  //Si l'utilisateurs n'ont pas de listes de shopping on lui propose d'en créer
   if (user.shoppingLists.length === 0) {
       firstShoppingList.style.display = "block";
   }
+  //Sinon on peut afficher les listes
   else {
-    console.log("shoppingLists : " + user.shoppingLists);
-    console.log(user);
-  }
+      //Lister les listes de shopping
+  	for (var oneList of user.shoppingLists){
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+        li.id = "line-"+oneList.id;
 
-	//Lister les listes de shopping
+        const spanTitle = document.createElement('span');
+        spanTitle.id = "name-"+oneList.id;
+
+        const title = document.createTextNode(
+            oneList.name + " (" + oneList.devise + ")"
+        );
+
+        spanTitle.appendChild(title);
+
+        li.appendChild(spanTitle);
+        ul.appendChild(li);
+
+        const span = document.createElement('span');
+        span.className = 'badge badge-primary badge-pill';
+        /*const itemNumber = document.createTextNode(
+            "<img src='../img/edit.svg'>"
+        );*/
+        const editImg = document.createElement('img');
+        editImg.src = '../img/edit.svg';
+        editImg.width = 20;
+        editImg.height = 20;
+        editImg.className = 'btnClick';
+        editImg.id = "edit-"+oneList.id;
+        editImg.setAttribute('onclick', 'editOneList('+oneList.id+')');
+
+        span.appendChild(editImg);
+
+        const space = document.createTextNode(" ");
+        span.appendChild(space);
+
+        const garbageImg = document.createElement('img');
+        garbageImg.src = '../img/garbage.svg';
+        garbageImg.width = 25;
+        garbageImg.height = 25;
+        garbageImg.className = 'btnClick';
+        //ONCLICK DELETE AVEC ID
+        garbageImg.id = "del-"+oneList.id;
+        garbageImg.setAttribute('onclick', 'delOneList('+oneList.id+')');
+
+        span.appendChild(garbageImg);
+        li.appendChild(span);
+	}
+    //console.log("shoppingLists : " + user.shoppingLists);
+    //console.log(user);
+      //document.getElementById("edit-"+oneList.id).addEventListener('click',editOneList(oneList.id));
+     // document.getElementById("del-"+oneList.id).addEventListener('click',delOneList(oneList.id));
+  }
 });
 
 //connection refusée
@@ -135,23 +204,34 @@ ipcRenderer.on("creationUser:true", function(user){
 
 
 
-/************Affichage des listes de courses************/
+/************Affichage ajout liste de courses************/
 
 //ajout d'un item :
 const ul = document.querySelector('ul');
 
-ipcRenderer.on('list:add', function (e, item) {
+ipcRenderer.on('list:add', function (e, user) {
+
+  const shopListAdded = user.shoppingLists[(user.shoppingLists.length)-1];
 
   const firstShoppingList = document.getElementById('noShoppingLists');
   firstShoppingList.style.display = "none";
 
+    /*console.log(user);
+    console.log(user.shoppingLists);*/
 	const li = document.createElement('li');
 	li.className = 'list-group-item d-flex justify-content-between align-items-center';
-	const itemText = document.createTextNode(
-		item
-	);
+    li.id = "line-"+shopListAdded.id;
 
-	li.appendChild(itemText);
+	const spanTitle = document.createElement('span');
+    spanTitle.id = "name-"+shopListAdded.id;
+
+    const title = document.createTextNode(
+        shopListAdded.name + " (" + shopListAdded.devise + ")"
+    );
+
+    spanTitle.appendChild(title);
+
+	li.appendChild(spanTitle);
 	ul.appendChild(li);
 
 	const span = document.createElement('span');
@@ -164,6 +244,9 @@ ipcRenderer.on('list:add', function (e, item) {
 	editImg.width = 20;
 	editImg.height = 20;
 	editImg.className = 'btnClick';
+    //ONCLICK EDIT AVEC ID
+    editImg.id = "edit-"+shopListAdded.id;
+    editImg.setAttribute('onclick', 'editOneList('+shopListAdded.id+')');
 
 	span.appendChild(editImg);
 
@@ -175,18 +258,38 @@ ipcRenderer.on('list:add', function (e, item) {
 	garbageImg.width = 25;
 	garbageImg.height = 25;
 	garbageImg.className = 'btnClick';
+    //ONCLICK DELETE AVEC ID
+    garbageImg.id = "del-"+shopListAdded.id;
+    garbageImg.setAttribute('onclick', 'delOneList('+shopListAdded.id+')');
 
 	span.appendChild(garbageImg);
 	li.appendChild(span);
+
+	/*document.getElementById("edit-"+shopListAdded.id).addEventListener('click',editOneList(shopListAdded.id));
+	document.getElementById("del-"+shopListAdded.id).addEventListener('click',delOneList(shopListAdded.id));*/
 });
 
+/*************Suppression des listes***********/
+ipcRenderer.on('deleteAllLists:true', function (e) {
+    const ul = document.querySelector('ul');
+    /*while (ul.firstChild) {
+        ul.removeChild(element.firstChild);
+    }*/
+    ul.innerHTML = "";
+	const firstShoppingList = document.getElementById('noShoppingLists');
+	firstShoppingList.style.display = "block";
+});
+/*************Rafraichissement des listes après modification***********/
+ipcRenderer.on('list:edit/true', function (e, id, name, devise) {
+    document.getElementById('name-'+id).innerText = name + " (" + devise + ")";
+})
 
 
-/*************PAGE D'ajout DE LISTE***********/
 
-
-
-
+/**********SUPPRESSION D UNE LISTE*********/
+ipcRenderer.on('list:remove/true', function (e, id) {
+    document.querySelector('ul').removeChild(document.getElementById('line-'+id));
+})
 
 /*************RACCOURCIS CLAVIER***********/
 /*

@@ -1,6 +1,8 @@
 /*Déplacer la fenêtre*/
 body {
     -webkit-app-region: drag;
+    border: solid 1px #375a7f;
+    height: 100vh;
 }
 
 .navbar{
@@ -76,18 +78,18 @@ button:hover{
 
 /******ADD LIST STYLE******/
 
-#formAddList{
-    margin-left: 5%;
-    width: 90%;
+#formAddList,#formEditList, #formDelList{
+    padding-left: 5%;
+    padding-right: 5%;
 }
-
+/*
 #inputAddList{
     width: 70%;
 }
 #AddListBtn{
   margin-left: 5%;
   width: 30%;
-}
+}*/
 
 /******COLORED ICONS hover****/
 #addList:hover{
