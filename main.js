@@ -186,7 +186,7 @@ function createRemoveListWindow() {
     //création de la fenêtre
     rmListWindow = new BrowserWindow({
         width: 450,
-        height:200,
+        height:230,
         title: 'Suppression d\'une liste de course',
         webPreferences: {
             nodeIntegration: true
@@ -328,10 +328,12 @@ ipcMain.on('editOneList', function (e, id) {
     if (rmListAlreadyInstencied){
         let message = "Veuillez fermer la fenêtre de suppression avant de modifier une liste";
         mainWindow.webContents.send('alerte',message);
+        rmListWindow.show();
     }
     else if (editListAlreadyInstencied){
         let message = "Une instance de modification est déjà en cours";
         mainWindow.webContents.send('alerte',message);
+        editListWindow.show();
     }else {
         editListAlreadyInstencied = true;
         createEditListWindow();
@@ -354,10 +356,12 @@ ipcMain.on('delOneList', function (e, id) {
     if (editListAlreadyInstencied){
         let message = "Veuillez fermer la fenêtre d'édition avant de supprimer une liste";
         mainWindow.webContents.send('alerte',message);
+        editListWindow.show();
     }
     else if (rmListAlreadyInstencied){
         let message = "Une instance de suppression est déjà en cours";
         mainWindow.webContents.send('alerte',message);
+        rmListWindow.show();
     }
     else {
         rmListAlreadyInstencied = true;
@@ -380,6 +384,15 @@ ipcMain.on('list:edit', function (e, id, list, devise) {
     editList(id, list, devise, function (result) {
         if (result){
             mainWindow.webContents.send("list:edit/true", id, list, devise);
+            for (var i = 0; i < user.shoppingLists.length; i++) {
+                //console.log("id : " + user.shoppingLists[i].id + "search id : "+id);
+                if (user.shoppingLists[i].id == id) {
+                    user.shoppingLists[i].name = list;
+                    user.shoppingLists[i].devise = devise;
+                    break; //Stop this loop, we found it!
+                }
+            }
+            console.log(user);
             editListWindow.close();
             editListAlreadyInstencied = false;
         }
@@ -392,7 +405,11 @@ ipcMain.on('list:edit', function (e, id, list, devise) {
 ipcMain.on('list:remove', function (e, id) {
     removeList(id, function (result) {
         if (result){
+
             mainWindow.webContents.send("list:remove/true", id);
+            const newSP = user.shoppingLists.filter(shopList => shopList.id != id);
+            user.shoppingLists = newSP;
+            console.log(user);
             rmListWindow.close();
             rmListAlreadyInstencied = false;
         }
