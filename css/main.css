@@ -2,7 +2,8 @@
 body {
     -webkit-app-region: drag;
     border: solid 1px #375a7f;
-    height: 100vh;
+    min-height: 100vh;
+    height: 100%;
 }
 
 .navbar{
@@ -11,8 +12,14 @@ body {
   z-index: 1000;
 }
 
+.navbar.navigPagesHistory{
+    height: 10px;
+    top: 70px;
+    padding-bottom: 0px;
+}
+
 #corps{
-  padding-top: 80px;
+  padding-top: 110px;
 }
 
 nav{
@@ -60,6 +67,14 @@ nav{
     cursor: pointer;
 }
 
+.lineClick{
+    -webkit-app-region: no-drag;
+    cursor: pointer;
+}
+.lineClick:hover{
+    color: #5286bd;
+}
+
 .titlePage{
     margin: 5px;
 }
@@ -103,6 +118,48 @@ button:hover{
 #exitBtn:hover{
     fill: red;
 }
+
+/*******Conteneur responsive pour les categories****/
+.container_categories{
+    width: 100%;
+    padding: 10px;
+    /*overflow: hidden;
+    margin: auto;
+    padding: 20px;*/
+
+}
+
+/* Grid styles -------------------------------------------------*/
+.container-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 2fr));
+    grid-gap: 30px;
+}
+
+.container-cards {
+    /*max-width: 960px;*/
+    margin: 0 auto 30px;
+}
+
+.container-card {
+    position: relative;
+    margin: auto;
+}
+
+.categorie_card {
+    min-height: 250px;
+    width: 250px;
+    border: solid 1px #375a7f;
+}
+.card-body-custom{
+    padding: 0px !important;
+}
+
+.alimentLine{
+    border: solid 1px #375a7f;
+    padding: 10px;
+}
+
 
 
 

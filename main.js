@@ -218,6 +218,37 @@ ipcMain.on('exitApp', function () {
     app.quit();
 });
 
+ipcMain.on('reloadMain', function () {
+    //REINIT USER
+    user = new Object();
+    user.shoppingLists = [];
+    //RAFRAICHISSEMENT DE LA FENETRE
+    mainWindow.reload();
+    //FERMETURE DES AUTRES FENETRES OUVERTES
+    if (rmListAlreadyInstencied){
+        rmListWindow.close();
+        rmListAlreadyInstencied = false;
+    }
+    if (editListAlreadyInstencied){
+        editListWindow.close();
+        editListAlreadyInstencied = false;
+    }
+    if (addListAlreadyInstencied){
+        addListWindow.close();
+        addListAlreadyInstencied = false;
+    }
+})
+
+ipcMain.on('reloadLists', function () {
+
+    //Réinitialisation des categories
+    for (var i = 0; i < user.shoppingLists.length; i++) {
+        user.shoppingLists[i].listCatgories = [];
+    }
+    //FERMETURE DES AUTRES FENETRES OUVERTES LIES AU CATEGORIES
+
+})
+
 /**********AJOUT D UNE LISTE*********/
 
 
@@ -263,7 +294,7 @@ ipcMain.on('user:connect', function (e, login, pwd) {
             if (user.id !== -1){
                 usersShopLists(user.id, function(result){
                     for(var oneList of result){
-                        console.log(oneList.money_unit);
+                        //console.log(oneList.money_unit);
                         user.shoppingLists.push(new shopList(oneList.id, oneList.name, oneList.money_unit));
                     }
                   //user.shoppingLists = result;
@@ -291,7 +322,7 @@ ipcMain.on('user:create', function(e, login, pwd){
     userExist(login, function(result){
          user.exist = result;
 
-         console.log(user.exist);
+         //console.log(user.exist);
 
          if(user.exist){
            mainWindow.webContents.send('creationUser:loginExist');
@@ -380,7 +411,7 @@ ipcMain.on('delOneList', function (e, id) {
 });
 
 ipcMain.on('list:edit', function (e, id, list, devise) {
-    console.log("modif liste n°"+id+" : "+list+" ("+devise+")");
+    //console.log("modif liste n°"+id+" : "+list+" ("+devise+")");
     editList(id, list, devise, function (result) {
         if (result){
             mainWindow.webContents.send("list:edit/true", id, list, devise);
@@ -429,6 +460,63 @@ ipcMain.on('closeRemoveListWindow', function () {
     rmListAlreadyInstencied = false;
 });
 
+/**********GESTION DES CATEGORIES*********/
+ipcMain.on('categories:get', function (e, id) {
+
+
+    //FERMETURE DES FENETRES QUI POURRAIENT POSER DES CONTRAINTES
+    if (rmListAlreadyInstencied){
+        rmListWindow.close();
+        rmListAlreadyInstencied = false;
+    }
+    if (editListAlreadyInstencied){
+        editListWindow.close();
+        editListAlreadyInstencied = false;
+    }
+    if (addListAlreadyInstencied){
+        addListWindow.close();
+        addListAlreadyInstencied = false;
+    }
+    //TRAITER LA DEMANDE D AFFICHAGE DES CATEGORIES
+    getCategoriesAndAliments(id , function (result) {
+        //console.log('traitement : '+result);
+        //Récupération réel indice de la liste
+        var indexOfShopList = user.shoppingLists.indexOf(user.shoppingLists.find(shopList => shopList.id == id));
+        //console.log("indice : "+indexOfShopList);
+        //RECUERATION DES CATEGORIES ET ALIMENTS
+        lastCat = 0;
+        for(var line of result){
+            currentCat = line.idCat;
+            //Si la categorie est différente
+            //ON VA Récupérer les aliments de la catégories en question
+            if (lastCat != currentCat){
+                idCat = 0;
+                lastCat = currentCat;
+                let lineStudied = new Object();
+                const transArray = result.filter(lineStudied => lineStudied.idCat === currentCat);
+                //REMPLIR UTILISATEUR AVEC CE TABLEAU DE TRANSITION
+                //Push dans categorie[idCat] et utilisateurs
+                //console.log(line.nameCat);
+                const lengthCat = user.shoppingLists[indexOfShopList].listCatgories.push(new category(line.idCat, line.nameCat));
+                const indexNewCat = lengthCat-1;
+                for(var alim of transArray){
+                    //console.log(user.shoppingLists[indexOfShopList].listCatgories[indexNewCat]);
+                    user.shoppingLists[indexOfShopList].listCatgories[indexNewCat].listAliments.push(new aliments(alim.idAlim, alim.nameAlim, alim.quantity, alim.unit, alim.max_price));
+                }
+            }
+        }
+
+
+        if (result != 0){
+            //console.log('ok');
+            mainWindow.send('categories:recept', user);
+        }
+        else {
+            //console.log('nok');
+            mainWindow.send('categories:recept', user);
+        }
+    });
+});
 
 /**********FONCTION D ACCES AU SGBD*********/
 
@@ -544,7 +632,7 @@ function addShoppingList(list, devise, idUser, callback){
     function(error, results, fields){
       if (error) throw error;
 
-      console.log("name into sql : "+list);
+      //console.log("name into sql : "+list);
       return callback(results.insertId);
     })
 
@@ -578,6 +666,21 @@ function removeList(id, callback) {
         function (error, result) {
             if (error) throw error;
             return callback(result.affectedRows);
+        })
+}
+
+function getCategoriesAndAliments(id , callback) {
+    const sql = "SELECT a.id as idAlim, c.idSL, a.idCat, a.name as nameAlim, c.name as nameCat, a.quantity, a.unit, a.max_price FROM categories c INNER JOIN aliments a ON c.id = a.idCat WHERE c.idSL = ? ORDER BY idCat";
+    connection.query(sql,
+        [id],
+        function (error, result) {
+            if (error) throw error;
+            if (result.affectedRows != 0){
+                return callback(result);
+            }
+            else {
+                return callback(0);
+            }
         })
 }
 

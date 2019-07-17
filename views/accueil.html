@@ -39,6 +39,20 @@
 
     </div>
 </nav>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary navigPagesHistory">
+    <div class="pagination">
+        <span class="page-item">
+            <span class="page-link disabled btnClick" id="btnConnection" onclick="returnToConnection()" style="display: none">
+                Authentification
+            </span>
+        </span>
+        <span class="page-item">
+          <span class="page-link disabled btnClick" id="btnLists" onclick="returnToLists()" style="display: none">
+            Mes listes
+          </span>
+        </span>
+    </div>
+</nav>
 
 <div id="corps">
 
@@ -156,11 +170,24 @@
   <div id="categoriesList">
       <!-- Pas encore de listes de courses -->
       <div class="alert alert-dismissible alert-info" id="noCategories">
-          <!--
-              <button type="button" class="close btnClick" data-dismiss="alert">&times;</button>
-          -->
+          <button type="button" class="close btnClick" data-dismiss="alert">&times;</button>
           <h4 class="alert-heading">Vous n'avez pas encore de catégorie associée à cette liste de course.</h4>
           <p class="mb-0">Voulez vous <a onclick="addCategorie()" class="alert-link btnClick">en ajouter une</a> ?</p>
+      </div>
+
+      <div class="container_categories">
+          <section class="container-cards" id="container-cards">
+              <!--<div class="container-card">
+                  <div class="card categorie_card">
+                      <div class="card-header">
+                          Anything
+                      </div>
+                      <div class="card-body">
+                          something
+                      </div>
+                  </div>
+              </div>-->
+          </section>
       </div>
   </div>
 

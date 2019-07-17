@@ -39,9 +39,110 @@ function editOneList(idListe) {
     ipcRenderer.send('editOneList', idListe);
 }
 
+//Affichage d'un message.. Notamment d'erreur
 ipcRenderer.on('alerte', function (e, message) {
     alert(message);
 })
+
+
+/*************NAVIGATION**************/
+function returnToLists(){
+    document.getElementById('shopListsDic').style.display = "block";
+    document.getElementById('categoriesList').style.display = "none";
+    document.getElementById('btnLists').style.display = "none";
+    document.getElementById('noCategories').style.display = "none";
+
+    document.getElementById('container-cards').innerHTML = "";
+
+    //A IMPLEMENTER LINE 242 main
+    ipcRenderer.send("reloadLists");
+}
+
+function returnToConnection(){
+	document.getElementById('btnConnection').style.display = "none";
+    document.getElementById('btnLists').style.display = "none";
+    ipcRenderer.send("reloadMain");
+}
+
+
+/*************Affichage et gestion du contenu des listes**************/
+function displayList(id){
+
+	document.getElementById('shopListsDic').style.display = "none";
+    document.getElementById('categoriesList').style.display = "block";
+    document.getElementById('btnLists').style.display = "block";
+
+    //Appel au main pour qu'il recherche les categories associées
+    ipcRenderer.send('categories:get', id);
+    //Récupération de l'utilisateur et des categories liées à cette utilisateurs (ainsi que les aliments qui y sont liés)
+    ipcRenderer.on('categories:recept', function (e, user) {
+        var indexOfShopList = user.shoppingLists.indexOf(user.shoppingLists.find(shopList => shopList.id == id));
+        //on récupère les catégories de la liste de courses en question
+        var categories = user.shoppingLists[indexOfShopList].listCatgories;
+        //console.log(user);
+        //Si pas de categories on propose à l'utilisateur d'en créer une facilement
+        if (categories.length === 0) {
+            document.getElementById('noCategories').style.display = "block";
+        }
+        //sinon on affiche les categories disponibles
+        else {
+            //Avant tous on vide tout
+            document.getElementById('noCategories').style.display = "none";
+            document.getElementById('container-cards').innerHTML = "";
+
+            //Premier element qui récupère les éléments créés
+            const sectionReceptive = document.getElementById('container-cards');
+
+            //Pour chaque catégorie on créer une carte
+            for (var category of categories){
+                const container = document.createElement('div');
+                container.className = 'container-card';
+
+                sectionReceptive.appendChild(container);
+
+                const card = document.createElement('div');
+                card.className = 'card categorie_card';
+
+                container.appendChild(card);
+
+                const card_header = document.createElement('div');
+                card_header.className = 'card-header';
+
+                card.appendChild(card_header);
+
+                const title = document.createTextNode(
+                    category.name
+                );
+
+                card_header.appendChild(title);
+
+                const card_body = document.createElement('div');
+                card_body.className = 'card-body card-body-custom';
+
+                card.appendChild(card_body);
+
+                var aliments = category.listAliments;
+
+                //Pour chaque aliment de la catégorie on rempli la carte
+                for (var aliment of aliments){
+
+                    const alimentLine = document.createElement('div');
+                    alimentLine.className = "alimentLine";
+                    const subline1 = document.createElement('div');
+                    subline1.innerHTML = "<b><u>"+aliment.name+"</u></b> : "+aliment.quantity+" "+aliment.unit;
+                    const subline2 = document.createElement('div');
+                    subline2.innerHTML = "prix maximal : "+aliment.max_price+" "+user.shoppingLists[indexOfShopList].devise;
+
+                    alimentLine.appendChild(subline1);
+                    alimentLine.appendChild(subline2);
+                    card_body.appendChild(alimentLine);
+                }
+
+            }
+        }
+
+    })
+}
 /************Connexion************/
 //envoie des infos de connexions
 const formConnection = document.getElementById('formauth');
@@ -63,6 +164,10 @@ ipcRenderer.on('connection:true', function(e, user) {
 
   	//desactiver la zone de connexion
 	conectArea.style.display = "none";
+	//désactiver l'affichage des categories au cas où
+    document.getElementById('categoriesList').style.display = "none";
+    //Activer le bouton de retour à l'authentification
+    document.getElementById('btnConnection').style.display = "block";
 
 	//ACTIVATION DES BOUTONS
 	btnAddList.style.display = "block";
@@ -83,6 +188,8 @@ ipcRenderer.on('connection:true', function(e, user) {
 
         const spanTitle = document.createElement('span');
         spanTitle.id = "name-"+oneList.id;
+        spanTitle.className = 'lineClick';
+        spanTitle.setAttribute('onclick', 'displayList('+oneList.id+')');
 
         const title = document.createTextNode(
             oneList.name + " (" + oneList.devise + ")"
@@ -196,6 +303,10 @@ ipcRenderer.on("creationUser:true", function(user){
 	const clearListsBtn = document.getElementById('clearLists');
 
 	conectArea.style.display = "none";
+    //désactiver l'affichage des categories au cas où
+    document.getElementById('categoriesList').style.display = "none";
+    //Activer le bouton de retour à l'authentification
+    document.getElementById('btnConnection').style.display = "block";
 	firstShoppingList.style.display = "block";
 	addListBtn.style.display = "block";
 	clearLists.style.display = "block";
@@ -221,9 +332,12 @@ ipcRenderer.on('list:add', function (e, user) {
 	const li = document.createElement('li');
 	li.className = 'list-group-item d-flex justify-content-between align-items-center';
     li.id = "line-"+shopListAdded.id;
+    li.setAttribute('onclick', 'displayList('+shopListAdded.id+')');
 
 	const spanTitle = document.createElement('span');
     spanTitle.id = "name-"+shopListAdded.id;
+    spanTitle.className = 'lineClick';
+    spanTitle.setAttribute('onclick', 'displayList('+shopListAdded.id+')');
 
     const title = document.createTextNode(
         shopListAdded.name + " (" + shopListAdded.devise + ")"
