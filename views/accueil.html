@@ -22,6 +22,7 @@
 <!--
         <img id="moveBtn" src="../img/move.svg" width="40" height="40" ondrag="document.body.setSt">
 -->
+        <!--BOUTONS POUR GERER LES LISTES-->
         <button type="button" id="addList" class="tip btn" onclick="addList()">
             <img class="btnClick" src="../img/shopping-cart.svg" width="40" height="40">
             <span><div class="tipText">Ajouter une liste</div></span>
@@ -32,6 +33,18 @@
             <span><div class="tipText">Supprimer les listes</div></span>
         </button>
 
+        <!--BOUTONS POUR GERER LES CATEGORIES-->
+        <button type="button" id="addCat" class="tip btn" onclick="addCat()">
+            <img class="btnClick" src="../img/cart_add_cat.svg" width="40" height="40">
+            <span><div class="tipText">Ajouter une catégorie</div></span>
+        </button>
+
+        <button type="button" id="clearCats" class="tip btn" onclick="clearCats()">
+            <img class="btnClick" src="../img/cart_remove_cat.svg" width="40" height="40">
+            <span><div class="tipText">Supprimer les catégories</div></span>
+        </button>
+
+        <!--BOUTON POUR QUITTER L APPLI-->
         <button type="button" id="exitBtn" class="btn tip" onclick="exitApp()">
             <img class="btnClick" src="../img/logout.svg" width="40" height="40">
             <span><div class="tipText">Quitter l'application</div></span>

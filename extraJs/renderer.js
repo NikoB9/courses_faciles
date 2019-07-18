@@ -39,6 +39,41 @@ function editOneList(idListe) {
     ipcRenderer.send('editOneList', idListe);
 }
 
+//Ajout d'un aliment
+function addAnAliment(id){
+     console.log('go add aliment at : '+id)
+}
+
+//Ajout d'une catégorie
+function addCat(){
+    console.log('go add cat ')
+}
+
+//Ajout d'une catégorie
+function clearCats(){
+    console.log('go clearCats ')
+}
+
+//Edition d'un aliment
+function editOneAliment(id){
+    console.log('go edit aliment at : '+id)
+}
+
+//Suppression d'un aliment
+function delOneAliment(id){
+    console.log('go del aliment at : '+id)
+}
+
+//Edition d'une categorie
+function editOneCat(id){
+    console.log('go edit cat at : '+id)
+}
+
+//Suppression d'une categorie
+function delOneCat(id){
+    console.log('go del cat at : '+id)
+}
+
 //Affichage d'un message.. Notamment d'erreur
 ipcRenderer.on('alerte', function (e, message) {
     alert(message);
@@ -51,6 +86,11 @@ function returnToLists(){
     document.getElementById('categoriesList').style.display = "none";
     document.getElementById('btnLists').style.display = "none";
     document.getElementById('noCategories').style.display = "none";
+    /**BOUTONS TOP MENU**/
+    document.getElementById('addList').style.display = "block";
+    document.getElementById('clearLists').style.display = "block";
+    document.getElementById('addCat').style.display = "none";
+    document.getElementById('clearCats').style.display = "none";
 
     document.getElementById('container-cards').innerHTML = "";
 
@@ -71,6 +111,12 @@ function displayList(id){
 	document.getElementById('shopListsDic').style.display = "none";
     document.getElementById('categoriesList').style.display = "block";
     document.getElementById('btnLists').style.display = "block";
+
+    /**BOUTONS TOP MENU**/
+    document.getElementById('addList').style.display = "none";
+    document.getElementById('clearLists').style.display = "none";
+    document.getElementById('addCat').style.display = "block";
+    document.getElementById('clearCats').style.display = "block";
 
     //Appel au main pour qu'il recherche les categories associées
     ipcRenderer.send('categories:get', id);
@@ -116,6 +162,35 @@ function displayList(id){
 
                 card_header.appendChild(title);
 
+                const span = document.createElement('span');
+                span.className = 'badge badge-primary badge-pill';
+                /*const itemNumber = document.createTextNode(
+                    "<img src='../img/edit.svg'>"
+                );*/
+                const editImg = document.createElement('img');
+                editImg.src = '../img/edit.svg';
+                editImg.width = 20;
+                editImg.height = 20;
+                editImg.className = 'btnClick';
+                editImg.setAttribute('onclick', 'editOneCat('+category.id+')');
+
+                span.appendChild(editImg);
+
+                const space = document.createTextNode(" ");
+                span.appendChild(space);
+
+                const garbageImg = document.createElement('img');
+                garbageImg.src = '../img/garbage.svg';
+                garbageImg.width = 25;
+                garbageImg.height = 25;
+                garbageImg.className = 'btnClick';
+                //ONCLICK DELETE AVEC ID
+                garbageImg.setAttribute('onclick', 'delOneCat('+category.id+')');
+
+                span.appendChild(garbageImg);
+
+                card_header.appendChild(span);
+
                 const card_body = document.createElement('div');
                 card_body.className = 'card-body card-body-custom';
 
@@ -136,7 +211,50 @@ function displayList(id){
                     alimentLine.appendChild(subline1);
                     alimentLine.appendChild(subline2);
                     card_body.appendChild(alimentLine);
+
+                    const span = document.createElement('span');
+                    span.className = 'badge badge-primary badge-pill badge-aliment';
+                    /*const itemNumber = document.createTextNode(
+                        "<img src='../img/edit.svg'>"
+                    );*/
+                    const editImg = document.createElement('img');
+                    editImg.src = '../img/edit.svg';
+                    editImg.width = 20;
+                    editImg.height = 20;
+                    editImg.className = 'btnClick';
+                    editImg.setAttribute('onclick', 'editOneAliment('+category.id+')');
+
+                    span.appendChild(editImg);
+
+                    const space = document.createTextNode(" ");
+                    span.appendChild(space);
+
+                    const garbageImg = document.createElement('img');
+                    garbageImg.src = '../img/garbage.svg';
+                    garbageImg.width = 25;
+                    garbageImg.height = 25;
+                    garbageImg.className = 'btnClick';
+                    //ONCLICK DELETE AVEC ID
+                    garbageImg.setAttribute('onclick', 'delOneAliment('+category.id+')');
+
+                    span.appendChild(garbageImg);
+
+                    alimentLine.appendChild(span);
                 }
+
+                const card_footer = document.createElement('div');
+                card_footer.className = 'card-footer btnClick categoryFooter';
+                card_footer.setAttribute('onclick', 'addAnAliment('+category.id+')');
+                card.appendChild(card_footer);
+
+
+                const addAliment = document.createElement('img');
+                addAliment.src = '../img/cart_add_alim.svg';
+                addAliment.width = 30;
+                addAliment.height = 30;
+                addAliment.className = 'btnClick';
+                card_footer.appendChild(addAliment);
+
 
             }
         }

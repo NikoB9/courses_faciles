@@ -43,6 +43,15 @@ nav{
     margin: 3%;
 }
 
+.badge-primary{
+    float: right;
+}
+
+.badge-aliment{
+    margin-top: -5px;
+    margin-right: -21px;
+}
+
 #gestIcons{
     position: fixed;
     right: 8px;
@@ -87,7 +96,7 @@ button:hover{
     background: rgba(103, 103, 103, 0.26) !important;
 }
 
-#addList, #clearLists{
+#addList, #clearLists, #addCat, #clearCats{
   display: none;
 }
 
@@ -160,6 +169,11 @@ button:hover{
     padding: 10px;
 }
 
+.categoryFooter{
+    text-align: center;
+    padding-right: 25px;
+}
+
 
 
 
@@ -185,7 +199,7 @@ button.tip:hover span {
     background: #375a7f;
     left: -97px;
     margin: 10px;
-    width: 80px;
+    width: 100px;
     position: absolute;
     top: -5px;
     border-radius: 10px;
