@@ -40,38 +40,38 @@ function editOneList(idListe) {
 }
 
 //Ajout d'un aliment
-function addAnAliment(id){
-     console.log('go add aliment at : '+id)
+function addAnAliment(idCat, listId){
+     ipcRenderer.send('addAliment', idCat, listId);
 }
 
 //Ajout d'une catégorie
-function addCat(){
-    console.log('go add cat ')
+function addCat(idList){
+    ipcRenderer.send('addCat',idList);
 }
 
 //Ajout d'une catégorie
-function clearCats(){
-    console.log('go clearCats ')
+function clearCats(idList){
+    console.log('go clearCats at : '+idList)
 }
 
 //Edition d'un aliment
-function editOneAliment(id){
-    console.log('go edit aliment at : '+id)
+function editOneAliment(idAlim, idCat, listId){
+    console.log('go edit aliment at : '+idAlim)
 }
 
 //Suppression d'un aliment
-function delOneAliment(id){
-    console.log('go del aliment at : '+id)
+function delOneAliment(idAlim, idCat, listId){
+    console.log('go del aliment at : '+idAlim)
 }
 
 //Edition d'une categorie
-function editOneCat(id){
-    console.log('go edit cat at : '+id)
+function editOneCat(idCat, listId){
+    console.log('go edit cat at : '+idCat)
 }
 
 //Suppression d'une categorie
-function delOneCat(id){
-    console.log('go del cat at : '+id)
+function delOneCat(idCat, listId){
+    console.log('go del cat at : '+idCat)
 }
 
 //Affichage d'un message.. Notamment d'erreur
@@ -116,7 +116,9 @@ function displayList(id){
     document.getElementById('addList').style.display = "none";
     document.getElementById('clearLists').style.display = "none";
     document.getElementById('addCat').style.display = "block";
+    document.getElementById('addCat').setAttribute('onclick', 'addCat('+id+')');
     document.getElementById('clearCats').style.display = "block";
+    document.getElementById('clearCats').setAttribute('onclick', 'clearCats('+id+')');
 
     //Appel au main pour qu'il recherche les categories associées
     ipcRenderer.send('categories:get', id);
@@ -140,6 +142,7 @@ function displayList(id){
             const sectionReceptive = document.getElementById('container-cards');
 
             //Pour chaque catégorie on créer une carte
+            //console.log(categories);
             for (var category of categories){
                 const container = document.createElement('div');
                 container.className = 'container-card';
@@ -172,7 +175,7 @@ function displayList(id){
                 editImg.width = 20;
                 editImg.height = 20;
                 editImg.className = 'btnClick';
-                editImg.setAttribute('onclick', 'editOneCat('+category.id+')');
+                editImg.setAttribute('onclick', 'editOneCat('+category.id+', '+id+')');
 
                 span.appendChild(editImg);
 
@@ -185,7 +188,7 @@ function displayList(id){
                 garbageImg.height = 25;
                 garbageImg.className = 'btnClick';
                 //ONCLICK DELETE AVEC ID
-                garbageImg.setAttribute('onclick', 'delOneCat('+category.id+')');
+                garbageImg.setAttribute('onclick', 'delOneCat('+category.id+', '+id+')');
 
                 span.appendChild(garbageImg);
 
@@ -200,51 +203,55 @@ function displayList(id){
 
                 //Pour chaque aliment de la catégorie on rempli la carte
                 for (var aliment of aliments){
+                    
+                    if (aliment.name != null){
+                        const alimentLine = document.createElement('div');
+                        alimentLine.className = "alimentLine";
+                        const subline1 = document.createElement('div');
+                        subline1.innerHTML = "<b><u>"+aliment.name+"</u></b> : "+aliment.quantity+" "+aliment.unit;
+                        const subline2 = document.createElement('div');
+                        subline2.innerHTML = "prix maximal : "+aliment.max_price+" "+user.shoppingLists[indexOfShopList].devise;
 
-                    const alimentLine = document.createElement('div');
-                    alimentLine.className = "alimentLine";
-                    const subline1 = document.createElement('div');
-                    subline1.innerHTML = "<b><u>"+aliment.name+"</u></b> : "+aliment.quantity+" "+aliment.unit;
-                    const subline2 = document.createElement('div');
-                    subline2.innerHTML = "prix maximal : "+aliment.max_price+" "+user.shoppingLists[indexOfShopList].devise;
+                        alimentLine.appendChild(subline1);
+                        alimentLine.appendChild(subline2);
+                        card_body.appendChild(alimentLine);
 
-                    alimentLine.appendChild(subline1);
-                    alimentLine.appendChild(subline2);
-                    card_body.appendChild(alimentLine);
+                        const span = document.createElement('span');
+                        span.className = 'badge badge-primary badge-pill badge-aliment';
+                        /*const itemNumber = document.createTextNode(
+                            "<img src='../img/edit.svg'>"
+                        );*/
+                        const editImg = document.createElement('img');
+                        editImg.src = '../img/edit.svg';
+                        editImg.width = 20;
+                        editImg.height = 20;
+                        editImg.className = 'btnClick';
+                        editImg.setAttribute('onclick', 'editOneAliment('+aliment.id+', '+category.id+', '+id+')');
 
-                    const span = document.createElement('span');
-                    span.className = 'badge badge-primary badge-pill badge-aliment';
-                    /*const itemNumber = document.createTextNode(
-                        "<img src='../img/edit.svg'>"
-                    );*/
-                    const editImg = document.createElement('img');
-                    editImg.src = '../img/edit.svg';
-                    editImg.width = 20;
-                    editImg.height = 20;
-                    editImg.className = 'btnClick';
-                    editImg.setAttribute('onclick', 'editOneAliment('+category.id+')');
+                        span.appendChild(editImg);
 
-                    span.appendChild(editImg);
+                        const space = document.createTextNode(" ");
+                        span.appendChild(space);
 
-                    const space = document.createTextNode(" ");
-                    span.appendChild(space);
+                        const garbageImg = document.createElement('img');
+                        garbageImg.src = '../img/garbage.svg';
+                        garbageImg.width = 25;
+                        garbageImg.height = 25;
+                        garbageImg.className = 'btnClick';
+                        //ONCLICK DELETE AVEC ID
+                        garbageImg.setAttribute('onclick', 'delOneAliment('+aliment.id+', '+category.id+', '+id+')');
 
-                    const garbageImg = document.createElement('img');
-                    garbageImg.src = '../img/garbage.svg';
-                    garbageImg.width = 25;
-                    garbageImg.height = 25;
-                    garbageImg.className = 'btnClick';
-                    //ONCLICK DELETE AVEC ID
-                    garbageImg.setAttribute('onclick', 'delOneAliment('+category.id+')');
+                        span.appendChild(garbageImg);
 
-                    span.appendChild(garbageImg);
+                        alimentLine.appendChild(span);
+                    }
 
-                    alimentLine.appendChild(span);
+
                 }
 
                 const card_footer = document.createElement('div');
                 card_footer.className = 'card-footer btnClick categoryFooter';
-                card_footer.setAttribute('onclick', 'addAnAliment('+category.id+')');
+                card_footer.setAttribute('onclick', 'addAnAliment('+category.id+', '+id+')');
                 card.appendChild(card_footer);
 
 
@@ -261,6 +268,78 @@ function displayList(id){
 
     })
 }
+/************TRAITEMENT DES CATEGORIES************/
+ipcRenderer.on('add:category/ok', function (e, catName, listId) {
+    const container = document.createElement('div');
+    container.className = 'container-card';
+
+    sectionReceptive.appendChild(container);
+
+    const card = document.createElement('div');
+    card.className = 'card categorie_card';
+
+    container.appendChild(card);
+
+    const card_header = document.createElement('div');
+    card_header.className = 'card-header';
+
+    card.appendChild(card_header);
+
+    const title = document.createTextNode(
+        catName
+    );
+
+    card_header.appendChild(title);
+
+    const span = document.createElement('span');
+    span.className = 'badge badge-primary badge-pill';
+    /*const itemNumber = document.createTextNode(
+        "<img src='../img/edit.svg'>"
+    );*/
+    const editImg = document.createElement('img');
+    editImg.src = '../img/edit.svg';
+    editImg.width = 20;
+    editImg.height = 20;
+    editImg.className = 'btnClick';
+    editImg.setAttribute('onclick', 'editOneCat('+listId+')');
+
+    span.appendChild(editImg);
+
+    const space = document.createTextNode(" ");
+    span.appendChild(space);
+
+    const garbageImg = document.createElement('img');
+    garbageImg.src = '../img/garbage.svg';
+    garbageImg.width = 25;
+    garbageImg.height = 25;
+    garbageImg.className = 'btnClick';
+    //ONCLICK DELETE AVEC ID
+    garbageImg.setAttribute('onclick', 'delOneCat('+listId+')');
+
+    span.appendChild(garbageImg);
+
+    card_header.appendChild(span);
+
+    const card_body = document.createElement('div');
+    card_body.className = 'card-body card-body-custom';
+
+    card.appendChild(card_body);
+
+    const card_footer = document.createElement('div');
+    card_footer.className = 'card-footer btnClick categoryFooter';
+    card_footer.setAttribute('onclick', 'addAnAliment('+listId+')');
+    card.appendChild(card_footer);
+
+
+    const addAliment = document.createElement('img');
+    addAliment.src = '../img/cart_add_alim.svg';
+    addAliment.width = 30;
+    addAliment.height = 30;
+    addAliment.className = 'btnClick';
+    card_footer.appendChild(addAliment);
+
+})
+
 /************Connexion************/
 //envoie des infos de connexions
 const formConnection = document.getElementById('formauth');

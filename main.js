@@ -31,13 +31,28 @@ require('electron-reload')(__dirname);
 
 
 //declarations des fenetres
+/**Fenêtre principale**/
 let mainWindow;
+/**Fenêtres gestion de listes**/
 let addListWindow;
 let editListWindow;
 let rmListWindow;
+/**Fenêtre gestion des catégories**/
+let addCategoryWindow, editCategoryWindow, delCategoryWindow;
+/**Fenêtre gestion des aliments**/
+let addAlimentWindow, editAlimentWindow, delAlimentWindow;
+/**Instance fenetres gestion listes**/
 let addListAlreadyInstencied = false;
 let editListAlreadyInstencied = false;
 let rmListAlreadyInstencied = false;
+/**Instance fenetres gestion catégories**/
+let addCategoryAlreadyInstencied = false;
+let editCategoryAlreadyInstencied = false;
+let delCategoryAlreadyInstencied = false;
+/**Instance fenetres gestion aliments**/
+let addAlimentAlreadyInstencied = false;
+let editAlimentAlreadyInstencied = false;
+let delAlimentAlreadyInstencied = false;
 
 
 //shoppingLists
@@ -150,6 +165,75 @@ function createListWindow() {
     })
 }
 
+//Ajouter une fenetre
+function createAddCategoryWindow() {
+    //création de la fenêtre
+    addCategoryWindow = new BrowserWindow({
+        width: 400,
+        height:250,
+        title: 'Ajout d\'une categorie',
+        webPreferences: {
+            nodeIntegration: true
+        },
+        transparent: true,
+        frame: false,
+        //icon: __dirname+'img/mainIco.svg'
+        icon: path.join(__dirname, '/img/mainIco.png')
+    });
+    //Insérer le code html
+    addCategoryWindow.loadURL(url.format(
+        {
+            pathname: path.join(__dirname, 'views/addCategory.html'),
+            protocol: 'file:',
+            slashes: true
+        }
+    ));
+    //
+    //addListWindow.webContents.openDevTools();
+
+    addCategoryWindow.on('close', function () {
+        //addListWindow = null;
+        addCategoryAlreadyInstencied = false;
+    })
+
+}
+
+
+//Ajouter un aliment : fenetre
+function createAddAlimentWindow() {
+    //création de la fenêtre
+    addAlimentWindow = new BrowserWindow({
+        width: 400,
+        height:450,
+        title: 'Ajout d\'un aliment',
+        webPreferences: {
+            nodeIntegration: true
+        },
+        transparent: true,
+        frame: false,
+        //icon: __dirname+'img/mainIco.svg'
+        icon: path.join(__dirname, '/img/mainIco.png')
+    });
+    //Insérer le code html
+    addAlimentWindow.loadURL(url.format(
+        {
+            pathname: path.join(__dirname, 'views/addAliment.html'),
+            protocol: 'file:',
+            slashes: true
+        }
+    ));
+    //
+    //addListWindow.webContents.openDevTools();
+
+    addAlimentWindow.on('close', function () {
+        //addListWindow = null;
+        addAlimentAlreadyInstencied = false;
+    })
+
+}
+
+
+
 //Fenêtre de modification d'une liste de course
 function createEditListWindow() {
     //création de la fenêtre
@@ -186,7 +270,7 @@ function createRemoveListWindow() {
     //création de la fenêtre
     rmListWindow = new BrowserWindow({
         width: 450,
-        height:230,
+        height:250,
         title: 'Suppression d\'une liste de course',
         webPreferences: {
             nodeIntegration: true
@@ -237,6 +321,32 @@ ipcMain.on('reloadMain', function () {
         addListWindow.close();
         addListAlreadyInstencied = false;
     }
+    //FERMETURE DES AUTRES FENETRES OUVERTES LIES AU CATEGORIES
+    if (delAlimentAlreadyInstencied){
+        delAlimentWindow.close();
+        delAlimentAlreadyInstencied = false;
+    }
+    if (editAlimentAlreadyInstencied){
+        editAlimentWindow.close();
+        editAlimentAlreadyInstencied = false;
+    }
+    if (addAlimentAlreadyInstencied){
+        addAlimentWindow.close();
+        addAlimentAlreadyInstencied = false;
+    }
+
+    if (delCategoryAlreadyInstencied){
+        delCategoryWindow.close();
+        delCategoryAlreadyInstencied = false;
+    }
+    if (editCategoryAlreadyInstencied){
+        editCategoryWindow.close();
+        editCategoryAlreadyInstencied = false;
+    }
+    if (addCategoryAlreadyInstencied){
+        addCategoryWindow.close();
+        addCategoryAlreadyInstencied = false;
+    }
 })
 
 ipcMain.on('reloadLists', function () {
@@ -246,6 +356,31 @@ ipcMain.on('reloadLists', function () {
         user.shoppingLists[i].listCatgories = [];
     }
     //FERMETURE DES AUTRES FENETRES OUVERTES LIES AU CATEGORIES
+    if (delAlimentAlreadyInstencied){
+        delAlimentWindow.close();
+        delAlimentAlreadyInstencied = false;
+    }
+    if (editAlimentAlreadyInstencied){
+        editAlimentWindow.close();
+        editAlimentAlreadyInstencied = false;
+    }
+    if (addAlimentAlreadyInstencied){
+        addAlimentWindow.close();
+        addAlimentAlreadyInstencied = false;
+    }
+
+    if (delCategoryAlreadyInstencied){
+        delCategoryWindow.close();
+        delCategoryAlreadyInstencied = false;
+    }
+    if (editCategoryAlreadyInstencied){
+        editCategoryWindow.close();
+        editCategoryAlreadyInstencied = false;
+    }
+    if (addCategoryAlreadyInstencied){
+        addCategoryWindow.close();
+        addCategoryAlreadyInstencied = false;
+    }
 
 })
 
@@ -517,6 +652,62 @@ ipcMain.on('categories:get', function (e, id) {
         }
     });
 });
+/**Ajout**********/
+ipcMain.on('addCat', function (e, idList) {
+    //console.log("id liste pour ajouter cat : "+idList);
+
+    addCategoryAlreadyInstencied = true;
+    createAddCategoryWindow();
+
+    //On attend que la fenêtre soit prête pour lui envoyer des données
+    addCategoryWindow.webContents.on('did-finish-load', () => {
+        addCategoryWindow.webContents.send('list:params', idList);
+    })
+});
+
+ipcMain.on('closeAddCategoryWindow', function () {
+    addCategoryWindow.close();
+});
+
+ipcMain.on('category:add', function (e, idList, nomCat) {
+    addCategory(nomCat, idList, function (result) {
+        //console.log('id request = '+result)
+        if (result != -1){
+            var indexOfShopList = user.shoppingLists.indexOf(user.shoppingLists.find(shopList => shopList.id == idList));
+            user.shoppingLists[indexOfShopList].listCatgories.push(new category(result, nomCat));
+            mainWindow.webContents.send('add:categoy/ok', nomCat, result);
+        }
+    })
+})
+
+/**********GESTION DES ALIMENTS*********/
+/**Ajout**********/
+ipcMain.on('addAliment', function (e, catId, listId) {
+    if (addAlimentAlreadyInstencied){
+        let message = "Une instance d'ajout est déjà en cours";
+        mainWindow.webContents.send('alerte',message);
+        editListWindow.show();
+    }
+    else if (delCategoryWindow){
+        let message = "Veuillez fermer la fenêtre de suppression de catégorie avant d'ajouter un aliment";
+        mainWindow.webContents.send('alerte',message);
+        editListWindow.show();
+    }else {
+        addAlimentAlreadyInstencied = true;
+        createAddAlimentWindow();
+
+        //On attend que la fenêtre soit prête pour lui envoyer des données
+        addAlimentWindow.webContents.on('did-finish-load', () => {
+            var indexOfShopList = user.shoppingLists.indexOf(user.shoppingLists.find(shopList => shopList.id == listId));
+            addAlimentWindow.webContents.send('list:params', catId, listId, user.shoppingLists[indexOfShopList].devise);
+            //console.log("modif liste n°"+id+" : "+listAttributes.name+" ("+listAttributes.devise+")");
+        })
+    }
+})
+
+ipcMain.on('closeAddAlimentWindow', function () {
+    addAlimentWindow.close();
+});
 
 /**********FONCTION D ACCES AU SGBD*********/
 
@@ -554,14 +745,6 @@ function userExist(login, callback){
 function userConnect(login, password, callback){
     var user_log = -1;
 
-    // connection.connect(function(err) {
-    //     if (err) {
-    //         console.error('error connecting: ' + err.stack);
-    //         return;
-    //     }
-    //
-    //     console.log('connected as id ' + connection.threadId);
-    // });
     var sql = "SELECT id FROM users WHERE users.`login` = ? AND users.`password` = ?";
     connection.query(sql,
         [login, password],
@@ -576,15 +759,6 @@ function userConnect(login, password, callback){
 }
 
 function usersShopLists(idUser, callback){
-
-    // connection.connect(function(err) {
-    //     if (err) {
-    //         console.error('error connecting: ' + err.stack);
-    //         return;
-    //     }
-    //
-    //     console.log('connected as id ' + connection.threadId);
-    // });
 
     connection.query("SELECT * FROM shoppinglists sl"
     //+" INNER JOIN categories c ON sl.id=c.idSL"
@@ -601,14 +775,6 @@ function usersShopLists(idUser, callback){
 
 function newUser(login, pwd, callback){
 
-    // connection.connect(function(err) {
-    //     if (err) {
-    //         console.error('error connecting: ' + err.stack);
-    //         return;
-    //     }
-    //
-    //     console.log('connected as id ' + connection.threadId);
-    // });
     connection.query(
       "INSERT into users (login, password) VALUES ( ? , ? )",
       [login, pwd],
@@ -620,7 +786,6 @@ function newUser(login, pwd, callback){
         return callback(results.insertId);
       }
     )
-    //connection.end();
 }
 
 
@@ -635,6 +800,20 @@ function addShoppingList(list, devise, idUser, callback){
       //console.log("name into sql : "+list);
       return callback(results.insertId);
     })
+
+}
+
+function addCategory(nomCategorie, idListe, callback){
+
+    var sql = "INSERT into categories(`name`,`idSL`) VALUES(?, ?)"
+    connection.query(sql,
+        [nomCategorie, idListe],
+        function(error, results, fields){
+            if (error) throw error;
+
+            //console.log("name into sql : "+list);
+            return callback(results.insertId);
+        })
 
 }
 
@@ -670,7 +849,7 @@ function removeList(id, callback) {
 }
 
 function getCategoriesAndAliments(id , callback) {
-    const sql = "SELECT a.id as idAlim, c.idSL, a.idCat, a.name as nameAlim, c.name as nameCat, a.quantity, a.unit, a.max_price FROM categories c INNER JOIN aliments a ON c.id = a.idCat WHERE c.idSL = ? ORDER BY idCat";
+    const sql = "SELECT a.id as idAlim, c.idSL, c.id as idCat, a.name as nameAlim, c.name as nameCat, a.quantity, a.unit, a.max_price FROM categories c LEFT JOIN aliments a ON c.id = a.idCat WHERE c.idSL = ? ORDER BY idCat";
     connection.query(sql,
         [id],
         function (error, result) {

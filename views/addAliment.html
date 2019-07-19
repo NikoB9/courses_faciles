@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+
+    <!--Menu de navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">
+            <img src="../img/bill.svg" width="30" height="30">
+        </a>
+        <a class="navbar-brand" href="#">
+            <h5 class="titlePage">Ajout d'un aliment</h5>
+        </a>
+        <div class="line" id="gestIcons">
+            <button type="button" class="btn tip" onclick="exitApp()">
+                <img class="btnClick" id="exitWindow" src="../img/close.svg" width="40" height="40">
+                <span><div class="tipText">Fermer la fenêtre</div></span>
+            </button>
+        </div>
+    </nav>
+
+    <div id="corps">
+      <form>
+          <div class="form-group" id="formAddList">
+
+              <!--<div class="nav">
+                <div class="inputAddList">-->
+                <input type="hidden" name="idListe" id="idListe">
+                <input type="hidden" name="idCategorie" id="idCategorie">
+
+                <label class="col-form-label col-form-label-lg" for="alimentName">Nom de l'aliment</label>
+                  <div class="form-row">
+                      <div class="col">
+                          <input class="form-control form-control-lg inputClick" type="text" placeholder="Steak" id="alimentName">
+                      </div>
+                  </div>
+
+                  <div class="form-row">
+                      <div class="col">
+                          <label class="col-form-label col-form-label-lg" for="quantity">Quantité</label>
+                          <input class="form-control form-control-lg inputClick" type="text" placeholder="5" id="quantity">
+                      </div>
+                      <div class="col">
+                          <label class="col-form-label col-form-label-lg" for="unit">Unité</label>
+                          <input class="form-control form-control-lg inputClick" type="text" placeholder="Kgr ou pièces" id="unit">
+                      </div>
+                  </div>
+
+                  <label class="col-form-label col-form-label-lg" for="price">Prix maximal</label>
+                  <div class="form-row">
+                      <div class="form-group col-9">
+                          <div class="input-group">
+                              <div class="input-group-prepend">
+                                  <span class="input-group-text" id="devise"></span>
+                              </div>
+                              <input class="form-control form-control-lg inputClick" aria-describedby="devise" type="text" placeholder="" id="price">
+                          </div>
+                      </div>
+                      <div class="form-group col-3">
+                          <button type="submit" id="AddListBtn" class="btn btn-info btnClick"><img src="../img/check.svg" width="35" height="35"></button>
+                      </div>
+                  </div>
+
+
+              <!--</div>-->
+          </div>
+      </form>
+    </div>
+
+
+
+    <script>
+        const electron = require('electron');
+        const {ipcRenderer} = electron;
+
+        //Dire au main que la fenêtre a fini de charger
+        ipcRenderer.send('did-finish-load');
+        //REMPLISSAGE DU FORMULAIRE
+        ipcRenderer.on('list:params', function (event, catId, listId, devise) {
+            document.getElementById('idListe').value = listId;
+            document.getElementById('idCategorie').value = catId;
+            document.getElementById('devise').innerText = devise;
+        })
+
+        const form = document.querySelector('form');
+        form.addEventListener('submit', submitForm);
+
+        function submitForm(e){
+            e.preventDefault();
+            /*const idList = document.querySelector('#idListe').value;
+            const nomCat = document.querySelector('#categoryName').value;
+            ipcRenderer.send('aliment:add', idList, nomCat);*/
+        }
+
+        const closeBtn = document.querySelector('#exitWindow');
+        closeBtn.addEventListener('click', closeThisWindow);
+
+        function closeThisWindow(e) {
+            e.preventDefault();
+            ipcRenderer.send('closeAddAlimentWindow');
+        }
+    </script>
+</body>
+</html>
