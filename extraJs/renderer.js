@@ -56,7 +56,7 @@ function clearCats(idList){
 
 //Edition d'un aliment
 function editOneAliment(idAlim, idCat, listId){
-    console.log('go edit aliment at : '+idAlim)
+    ipcRenderer.send('editAliment',idAlim, idCat, listId);
 }
 
 //Suppression d'un aliment
@@ -106,6 +106,151 @@ function returnToConnection(){
 
 
 /*************Affichage et gestion du contenu des listes**************/
+function displayListWithUser(id, user){
+    var indexOfShopList = user.shoppingLists.indexOf(user.shoppingLists.find(shopList => shopList.id == id));
+    //on récupère les catégories de la liste de courses en question
+    var categories = user.shoppingLists[indexOfShopList].listCatgories;
+    //console.log(user);
+    //Si pas de categories on propose à l'utilisateur d'en créer une facilement
+    if (categories.length === 0) {
+        document.getElementById('noCategories').style.display = "block";
+    }
+    //sinon on affiche les categories disponibles
+    else {
+        //Avant tous on vide tout
+        document.getElementById('noCategories').style.display = "none";
+        document.getElementById('container-cards').innerHTML = "";
+
+        //Premier element qui récupère les éléments créés
+        const sectionReceptive = document.getElementById('container-cards');
+
+        //Pour chaque catégorie on créer une carte
+        //console.log(categories);
+        for (var category of categories){
+            const container = document.createElement('div');
+            container.className = 'container-card';
+
+            sectionReceptive.appendChild(container);
+
+            const card = document.createElement('div');
+            card.className = 'card categorie_card';
+
+            container.appendChild(card);
+
+            const card_header = document.createElement('div');
+            card_header.className = 'card-header';
+
+            card.appendChild(card_header);
+
+            const title = document.createTextNode(
+                category.name
+            );
+
+            card_header.appendChild(title);
+
+            const span = document.createElement('span');
+            span.className = 'badge badge-primary badge-pill';
+            /*const itemNumber = document.createTextNode(
+                "<img src='../img/edit.svg'>"
+            );*/
+            const editImg = document.createElement('img');
+            editImg.src = '../img/edit.svg';
+            editImg.width = 20;
+            editImg.height = 20;
+            editImg.className = 'btnClick';
+            editImg.setAttribute('onclick', 'editOneCat('+category.id+', '+id+')');
+
+            span.appendChild(editImg);
+
+            const space = document.createTextNode(" ");
+            span.appendChild(space);
+
+            const garbageImg = document.createElement('img');
+            garbageImg.src = '../img/garbage.svg';
+            garbageImg.width = 25;
+            garbageImg.height = 25;
+            garbageImg.className = 'btnClick';
+            //ONCLICK DELETE AVEC ID
+            garbageImg.setAttribute('onclick', 'delOneCat('+category.id+', '+id+')');
+
+            span.appendChild(garbageImg);
+
+            card_header.appendChild(span);
+
+            const card_body = document.createElement('div');
+            card_body.className = 'card-body card-body-custom';
+
+            card.appendChild(card_body);
+
+            var aliments = category.listAliments;
+
+            //Pour chaque aliment de la catégorie on rempli la carte
+            for (var aliment of aliments){
+
+                if (aliment.name != null){
+                    const alimentLine = document.createElement('div');
+                    alimentLine.className = "alimentLine";
+                    const subline1 = document.createElement('div');
+                    subline1.innerHTML = "<b><u>"+aliment.name+"</u></b> : "+aliment.quantity+" "+aliment.unit;
+                    const subline2 = document.createElement('div');
+                    subline2.innerHTML = "prix maximal : "+aliment.max_price+" "+user.shoppingLists[indexOfShopList].devise;
+
+                    alimentLine.appendChild(subline1);
+                    alimentLine.appendChild(subline2);
+                    card_body.appendChild(alimentLine);
+
+                    const span = document.createElement('span');
+                    span.className = 'badge badge-primary badge-pill badge-aliment';
+                    /*const itemNumber = document.createTextNode(
+                        "<img src='../img/edit.svg'>"
+                    );*/
+                    const editImg = document.createElement('img');
+                    editImg.src = '../img/edit.svg';
+                    editImg.width = 20;
+                    editImg.height = 20;
+                    editImg.className = 'btnClick';
+                    editImg.setAttribute('onclick', 'editOneAliment('+aliment.id+', '+category.id+', '+id+')');
+
+                    span.appendChild(editImg);
+
+                    const space = document.createTextNode(" ");
+                    span.appendChild(space);
+
+                    const garbageImg = document.createElement('img');
+                    garbageImg.src = '../img/garbage.svg';
+                    garbageImg.width = 25;
+                    garbageImg.height = 25;
+                    garbageImg.className = 'btnClick';
+                    //ONCLICK DELETE AVEC ID
+                    garbageImg.setAttribute('onclick', 'delOneAliment('+aliment.id+', '+category.id+', '+id+')');
+
+                    span.appendChild(garbageImg);
+
+                    alimentLine.appendChild(span);
+                }
+
+
+            }
+
+            const card_footer = document.createElement('div');
+            card_footer.className = 'card-footer btnClick categoryFooter';
+            card_footer.setAttribute('onclick', 'addAnAliment('+category.id+', '+id+')');
+            card.appendChild(card_footer);
+
+
+            const addAliment = document.createElement('img');
+            addAliment.src = '../img/cart_add_alim.svg';
+            addAliment.width = 30;
+            addAliment.height = 30;
+            addAliment.className = 'btnClick';
+            card_footer.appendChild(addAliment);
+
+
+        }
+    }
+}
+
+
 function displayList(id){
 
 	document.getElementById('shopListsDic').style.display = "none";
@@ -124,148 +269,7 @@ function displayList(id){
     ipcRenderer.send('categories:get', id);
     //Récupération de l'utilisateur et des categories liées à cette utilisateurs (ainsi que les aliments qui y sont liés)
     ipcRenderer.on('categories:recept', function (e, user) {
-        var indexOfShopList = user.shoppingLists.indexOf(user.shoppingLists.find(shopList => shopList.id == id));
-        //on récupère les catégories de la liste de courses en question
-        var categories = user.shoppingLists[indexOfShopList].listCatgories;
-        //console.log(user);
-        //Si pas de categories on propose à l'utilisateur d'en créer une facilement
-        if (categories.length === 0) {
-            document.getElementById('noCategories').style.display = "block";
-        }
-        //sinon on affiche les categories disponibles
-        else {
-            //Avant tous on vide tout
-            document.getElementById('noCategories').style.display = "none";
-            document.getElementById('container-cards').innerHTML = "";
-
-            //Premier element qui récupère les éléments créés
-            const sectionReceptive = document.getElementById('container-cards');
-
-            //Pour chaque catégorie on créer une carte
-            //console.log(categories);
-            for (var category of categories){
-                const container = document.createElement('div');
-                container.className = 'container-card';
-
-                sectionReceptive.appendChild(container);
-
-                const card = document.createElement('div');
-                card.className = 'card categorie_card';
-
-                container.appendChild(card);
-
-                const card_header = document.createElement('div');
-                card_header.className = 'card-header';
-
-                card.appendChild(card_header);
-
-                const title = document.createTextNode(
-                    category.name
-                );
-
-                card_header.appendChild(title);
-
-                const span = document.createElement('span');
-                span.className = 'badge badge-primary badge-pill';
-                /*const itemNumber = document.createTextNode(
-                    "<img src='../img/edit.svg'>"
-                );*/
-                const editImg = document.createElement('img');
-                editImg.src = '../img/edit.svg';
-                editImg.width = 20;
-                editImg.height = 20;
-                editImg.className = 'btnClick';
-                editImg.setAttribute('onclick', 'editOneCat('+category.id+', '+id+')');
-
-                span.appendChild(editImg);
-
-                const space = document.createTextNode(" ");
-                span.appendChild(space);
-
-                const garbageImg = document.createElement('img');
-                garbageImg.src = '../img/garbage.svg';
-                garbageImg.width = 25;
-                garbageImg.height = 25;
-                garbageImg.className = 'btnClick';
-                //ONCLICK DELETE AVEC ID
-                garbageImg.setAttribute('onclick', 'delOneCat('+category.id+', '+id+')');
-
-                span.appendChild(garbageImg);
-
-                card_header.appendChild(span);
-
-                const card_body = document.createElement('div');
-                card_body.className = 'card-body card-body-custom';
-
-                card.appendChild(card_body);
-
-                var aliments = category.listAliments;
-
-                //Pour chaque aliment de la catégorie on rempli la carte
-                for (var aliment of aliments){
-                    
-                    if (aliment.name != null){
-                        const alimentLine = document.createElement('div');
-                        alimentLine.className = "alimentLine";
-                        const subline1 = document.createElement('div');
-                        subline1.innerHTML = "<b><u>"+aliment.name+"</u></b> : "+aliment.quantity+" "+aliment.unit;
-                        const subline2 = document.createElement('div');
-                        subline2.innerHTML = "prix maximal : "+aliment.max_price+" "+user.shoppingLists[indexOfShopList].devise;
-
-                        alimentLine.appendChild(subline1);
-                        alimentLine.appendChild(subline2);
-                        card_body.appendChild(alimentLine);
-
-                        const span = document.createElement('span');
-                        span.className = 'badge badge-primary badge-pill badge-aliment';
-                        /*const itemNumber = document.createTextNode(
-                            "<img src='../img/edit.svg'>"
-                        );*/
-                        const editImg = document.createElement('img');
-                        editImg.src = '../img/edit.svg';
-                        editImg.width = 20;
-                        editImg.height = 20;
-                        editImg.className = 'btnClick';
-                        editImg.setAttribute('onclick', 'editOneAliment('+aliment.id+', '+category.id+', '+id+')');
-
-                        span.appendChild(editImg);
-
-                        const space = document.createTextNode(" ");
-                        span.appendChild(space);
-
-                        const garbageImg = document.createElement('img');
-                        garbageImg.src = '../img/garbage.svg';
-                        garbageImg.width = 25;
-                        garbageImg.height = 25;
-                        garbageImg.className = 'btnClick';
-                        //ONCLICK DELETE AVEC ID
-                        garbageImg.setAttribute('onclick', 'delOneAliment('+aliment.id+', '+category.id+', '+id+')');
-
-                        span.appendChild(garbageImg);
-
-                        alimentLine.appendChild(span);
-                    }
-
-
-                }
-
-                const card_footer = document.createElement('div');
-                card_footer.className = 'card-footer btnClick categoryFooter';
-                card_footer.setAttribute('onclick', 'addAnAliment('+category.id+', '+id+')');
-                card.appendChild(card_footer);
-
-
-                const addAliment = document.createElement('img');
-                addAliment.src = '../img/cart_add_alim.svg';
-                addAliment.width = 30;
-                addAliment.height = 30;
-                addAliment.className = 'btnClick';
-                card_footer.appendChild(addAliment);
-
-
-            }
-        }
-
+        displayListWithUser(id, user);
     })
 }
 /************TRAITEMENT DES CATEGORIES************/
@@ -338,6 +342,18 @@ ipcRenderer.on('add:category/ok', function (e, catName, listId) {
     addAliment.className = 'btnClick';
     card_footer.appendChild(addAliment);
 
+})
+
+/************TRAITEMENT DES Aliments************/
+
+/**Ajout**********/
+ipcRenderer.on('aliment:add/ok', function (e, listId, user) {
+    displayListWithUser(listId, user);
+})
+
+/**Modification**********/
+ipcRenderer.on('aliment:edit/ok', function (e, listId, user) {
+    displayListWithUser(listId, user);
 })
 
 /************Connexion************/

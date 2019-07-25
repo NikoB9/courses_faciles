@@ -33,6 +33,7 @@
                 <div class="inputAddList">-->
                 <input type="hidden" name="idListe" id="idListe">
                 <input type="hidden" name="idCategorie" id="idCategorie">
+                <input type="hidden" name="idAliment" id="idAliment">
 
                 <label class="col-form-label col-form-label-lg" for="alimentName">Nom de l'aliment</label>
                   <div class="form-row">
@@ -82,10 +83,19 @@
         //Dire au main que la fenêtre a fini de charger
         ipcRenderer.send('did-finish-load');
         //REMPLISSAGE DU FORMULAIRE
-        ipcRenderer.on('list:params', function (event, catId, listId, devise) {
-            document.getElementById('idListe').value = listId;
-            document.getElementById('idCategorie').value = catId;
+        ipcRenderer.on('list:params', function (event, idAlim, idCat, listId, aliment, devise) {
+            document.querySelector('#idListe').value = listId;
+            document.querySelector('#idCategorie').value = idCat;
+            document.querySelector('#idAliment').value = idAlim;
+
             document.getElementById('devise').innerText = devise;
+
+            //console.log(aliment);
+
+            document.querySelector('#alimentName').value = aliment.name;
+            document.querySelector('#quantity').value = aliment.quantity;
+            document.querySelector('#unit').value = aliment.unit;
+            document.querySelector('#price').value = aliment.max_price;
         })
 
         const form = document.querySelector('form');
@@ -93,13 +103,17 @@
 
         function submitForm(e){
             e.preventDefault();
+
+            //Préparation des accesseurs
             const idList = document.querySelector('#idListe').value;
-            const idCat = document.querySelector('#idCategorie').value;
+            const idCategory = document.querySelector('#idCategorie').value;
+            const idAliment = document.querySelector('#idAliment').value;
             const nomAliment = document.querySelector('#alimentName').value;
             const quantite = document.querySelector('#quantity').value;
             const unitee = document.querySelector('#unit').value;
             const prixMax = document.querySelector('#price').value;
-            ipcRenderer.send('aliment:add', idList, idCat, nomAliment, quantite, unitee, prixMax);
+
+            ipcRenderer.send('aliment:edit', idList, idCategory, idAliment, nomAliment, quantite, unitee, prixMax);
         }
 
         const closeBtn = document.querySelector('#exitWindow');
@@ -107,7 +121,7 @@
 
         function closeThisWindow(e) {
             e.preventDefault();
-            ipcRenderer.send('closeAddAlimentWindow');
+            ipcRenderer.send('closeEditAlimentWindow');
         }
     </script>
 </body>

@@ -232,6 +232,39 @@ function createAddAlimentWindow() {
 
 }
 
+//Modifier un aliment : fenetre
+function createEditAlimentWindow() {
+    //création de la fenêtre
+    editAlimentWindow = new BrowserWindow({
+        width: 400,
+        height:450,
+        title: 'Modification d\'un aliment',
+        webPreferences: {
+            nodeIntegration: true
+        },
+        transparent: true,
+        frame: false,
+        //icon: __dirname+'img/mainIco.svg'
+        icon: path.join(__dirname, '/img/mainIco.png')
+    });
+    //Insérer le code html
+    editAlimentWindow.loadURL(url.format(
+        {
+            pathname: path.join(__dirname, 'views/editAliment.html'),
+            protocol: 'file:',
+            slashes: true
+        }
+    ));
+    //
+    //addListWindow.webContents.openDevTools();
+
+    editAlimentWindow.on('close', function () {
+        //addListWindow = null;
+        editAlimentAlreadyInstencied = false;
+    })
+
+}
+
 
 
 //Fenêtre de modification d'une liste de course
@@ -670,12 +703,14 @@ ipcMain.on('closeAddCategoryWindow', function () {
 });
 
 ipcMain.on('category:add', function (e, idList, nomCat) {
-    addCategory(nomCat, idList, function (result) {
+    addCategory(nomCat, idList, function (idInsertion) {
         //console.log('id request = '+result)
-        if (result != -1){
+        if (idInsertion != -1){
             var indexOfShopList = user.shoppingLists.indexOf(user.shoppingLists.find(shopList => shopList.id == idList));
-            user.shoppingLists[indexOfShopList].listCatgories.push(new category(result, nomCat));
-            mainWindow.webContents.send('add:categoy/ok', nomCat, result);
+            user.shoppingLists[indexOfShopList].listCatgories.push(new category(idInsertion, nomCat));
+            mainWindow.webContents.send('add:categoy/ok', nomCat, idInsertion);
+            addCategoryWindow.close();
+            addCategoryAlreadyInstencied = false;
         }
     })
 })
@@ -686,12 +721,12 @@ ipcMain.on('addAliment', function (e, catId, listId) {
     if (addAlimentAlreadyInstencied){
         let message = "Une instance d'ajout est déjà en cours";
         mainWindow.webContents.send('alerte',message);
-        editListWindow.show();
+        addAlimentWindow.show();
     }
-    else if (delCategoryWindow){
+    else if (delCategoryAlreadyInstencied){
         let message = "Veuillez fermer la fenêtre de suppression de catégorie avant d'ajouter un aliment";
         mainWindow.webContents.send('alerte',message);
-        editListWindow.show();
+        delCategoryWindow.show();
     }else {
         addAlimentAlreadyInstencied = true;
         createAddAlimentWindow();
@@ -707,6 +742,81 @@ ipcMain.on('addAliment', function (e, catId, listId) {
 
 ipcMain.on('closeAddAlimentWindow', function () {
     addAlimentWindow.close();
+});
+
+ipcMain.on('aliment:add', function (e, idList, idCat, nomAliment, quantite, unitee, prixMax) {
+    addAliment(nomAliment, idCat, quantite, unitee, prixMax, function (idInsertion) {
+        if (idInsertion != -1){
+            var indexOfShopList = user.shoppingLists.indexOf(user.shoppingLists.find(shopList => shopList.id == idList));
+            var indexOfCategory = user.shoppingLists[indexOfShopList].listCatgories.indexOf(user.shoppingLists[indexOfShopList].listCatgories.find(category => category.id == idCat));
+            user.shoppingLists[indexOfShopList].listCatgories[indexOfCategory].listAliments.push(new aliments(idInsertion, nomAliment, quantite, unitee, prixMax));
+            mainWindow.webContents.send('aliment:add/ok', idList, user);
+            addAlimentWindow.close();
+            addAlimentAlreadyInstencied = false;
+        }
+    })
+});
+
+/**Modification************************/
+ipcMain.on('editAliment', function (e, idAlim, idCat, listId) {
+    if (editAlimentAlreadyInstencied){
+        let message = "Une instance d'édition est déjà en cours";
+        mainWindow.webContents.send('alerte',message);
+        editAlimentWindow.show();
+    }
+    else if (delAlimentAlreadyInstencied){
+        let message = "Veuillez fermer la fenêtre de suppression d'aliment avant d'ajouter un aliment";
+        mainWindow.webContents.send('alerte',message);
+        delAlimentWindow.show();
+    }
+    else if (delCategoryAlreadyInstencied){
+        let message = "Veuillez fermer la fenêtre de suppression de catégorie avant d'ajouter un aliment";
+        mainWindow.webContents.send('alerte',message);
+        delCategoryWindow.show();
+    }else {
+        editAlimentAlreadyInstencied = true;
+        createEditAlimentWindow();
+
+        //On prepare l'aliment :
+        var indexOfShopList = user.shoppingLists.indexOf(user.shoppingLists.find(shopList => shopList.id == listId));
+        var indexOfCategory = user.shoppingLists[indexOfShopList].listCatgories.indexOf(user.shoppingLists[indexOfShopList].listCatgories.find(category => category.id == idCat));
+        var indexOfAliment = user.shoppingLists[indexOfShopList].listCatgories[indexOfCategory].listAliments.indexOf(user.shoppingLists[indexOfShopList].listCatgories[indexOfCategory].listAliments.find(aliments => aliments.id == idAlim));
+
+        var aliment = user.shoppingLists[indexOfShopList].listCatgories[indexOfCategory].listAliments[indexOfAliment];
+
+        //On attend que la fenêtre soit prête pour lui envoyer des données
+        editAlimentWindow.webContents.on('did-finish-load', () => {
+            editAlimentWindow.webContents.send('list:params', idAlim, idCat, listId, aliment, user.shoppingLists[indexOfShopList].devise);
+            //console.log("modif liste n°"+id+" : "+listAttributes.name+" ("+listAttributes.devise+")");
+        })
+    }
+});
+
+ipcMain.on('closeEditAlimentWindow', function () {
+    editAlimentWindow.close();
+});
+
+ipcMain.on('aliment:edit', function (e, idList, idCat, idAlim, nomAliment, quantite, unitee, prixMax) {
+
+    //On prepare l'aliment :
+    var indexOfShopList = user.shoppingLists.indexOf(user.shoppingLists.find(shopList => shopList.id == idList));
+    var indexOfCategory = user.shoppingLists[indexOfShopList].listCatgories.indexOf(user.shoppingLists[indexOfShopList].listCatgories.find(category => category.id == idCat));
+    var indexOfAliment = user.shoppingLists[indexOfShopList].listCatgories[indexOfCategory].listAliments.indexOf(user.shoppingLists[indexOfShopList].listCatgories[indexOfCategory].listAliments.find(aliments => aliments.id == idAlim));
+
+
+    editAliment(idAlim, nomAliment, quantite, unitee, prixMax, function (updateVerif) {
+        if (updateVerif){
+            //Modif de l'aliment en dur
+            user.shoppingLists[indexOfShopList].listCatgories[indexOfCategory].listAliments[indexOfAliment].name = nomAliment;
+            user.shoppingLists[indexOfShopList].listCatgories[indexOfCategory].listAliments[indexOfAliment].quantity = quantite;
+            user.shoppingLists[indexOfShopList].listCatgories[indexOfCategory].listAliments[indexOfAliment].unit = unitee;
+            user.shoppingLists[indexOfShopList].listCatgories[indexOfCategory].listAliments[indexOfAliment].max_price = prixMax;
+
+            mainWindow.webContents.send('aliment:edit/ok', idList, user);
+            editAlimentWindow.close();
+            editAlimentAlreadyInstencied = false;
+        }
+    })
 });
 
 /**********FONCTION D ACCES AU SGBD*********/
@@ -817,6 +927,20 @@ function addCategory(nomCategorie, idListe, callback){
 
 }
 
+function addAliment(nom, idCategorie, quantite, unite, prixMax, callback){
+
+    var sql = "INSERT into aliments(`idCat`, `name`, `quantity`, `unit`, `max_price`) VALUES(?, ?, ?, ?, ?)"
+    connection.query(sql,
+        [idCategorie, nom, quantite, unite, prixMax],
+        function(error, results, fields){
+            if (error) throw error;
+
+            //console.log("name into sql : "+list);
+            return callback(results.insertId);
+        })
+
+}
+
 
 function deleteAllLists(callback) {
     var sql = "DELETE FROM shoppinglists WHERE idUser = ?"
@@ -863,4 +987,17 @@ function getCategoriesAndAliments(id , callback) {
         })
 }
 
+function editAliment(idAlim, nomAliment, quantite, unitee, prixMax, callback) {
 
+    var sql = "UPDATE aliments SET `name` = ?, `quantity` = ?, `unit` = ?, `max_price` = ? WHERE id = ?"
+    connection.query(sql,
+        [nomAliment, quantite, unitee, prixMax, idAlim],
+        function(error, results, fields){
+            if (error) throw error;
+
+            //console.log("name into sql : "+list);
+            return callback(results.affectedRows);
+        })
+
+
+}
