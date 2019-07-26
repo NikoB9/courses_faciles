@@ -51,7 +51,7 @@ function addCat(idList){
 
 //Ajout d'une catégorie
 function clearCats(idList){
-    console.log('go clearCats at : '+idList)
+    console.log("à faire");
 }
 
 //Edition d'un aliment
@@ -61,17 +61,17 @@ function editOneAliment(idAlim, idCat, listId){
 
 //Suppression d'un aliment
 function delOneAliment(idAlim, idCat, listId){
-    console.log('go del aliment at : '+idAlim)
+    console.log("à faire");
 }
 
 //Edition d'une categorie
 function editOneCat(idCat, listId){
-    console.log('go edit cat at : '+idCat)
+    ipcRenderer.send('editCategory', idCat, listId);
 }
 
 //Suppression d'une categorie
 function delOneCat(idCat, listId){
-    console.log('go del cat at : '+idCat)
+    console.log("à faire");
 }
 
 //Affichage d'un message.. Notamment d'erreur
@@ -353,6 +353,13 @@ ipcRenderer.on('aliment:add/ok', function (e, listId, user) {
 
 /**Modification**********/
 ipcRenderer.on('aliment:edit/ok', function (e, listId, user) {
+    displayListWithUser(listId, user);
+})
+
+/************TRAITEMENT édition DES Categories************/
+
+/**Modification**********/
+ipcRenderer.on('edit:categoy/ok', function (e, listId, user) {
     displayListWithUser(listId, user);
 })
 

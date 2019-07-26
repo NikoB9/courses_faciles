@@ -2,11 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0c0743c1-e75a-4f7e-b17f-7846f5820806" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/views/editAliment.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/views/editCategory.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/extraJs/renderer.js" beforeDir="false" afterPath="$PROJECT_DIR$/extraJs/renderer.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/views/addAliment.html" beforeDir="false" afterPath="$PROJECT_DIR$/views/addAliment.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/views/editAliment.html" beforeDir="false" afterPath="$PROJECT_DIR$/views/editAliment.html" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -21,59 +21,68 @@
     <session id="-1006928839">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="4" />
+          <entry key="project.closed" value="5" />
           <entry key="project.open.time.11" value="1" />
           <entry key="project.open.time.12" value="2" />
-          <entry key="project.open.time.13" value="2" />
+          <entry key="project.open.time.13" value="3" />
           <entry key="project.open.time.14" value="1" />
           <entry key="project.open.time.15" value="1" />
           <entry key="project.open.time.18" value="1" />
-          <entry key="project.opened" value="8" />
+          <entry key="project.opened" value="9" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="css" value="506" />
-          <entry key="html" value="1034" />
-          <entry key="js" value="6646" />
+          <entry key="html" value="1101" />
+          <entry key="js" value="7068" />
           <entry key="svg" value="20" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CSS" value="506" />
-          <entry key="HTML" value="1034" />
-          <entry key="JavaScript" value="6646" />
+          <entry key="HTML" value="1101" />
+          <entry key="JavaScript" value="7068" />
           <entry key="SVG" value="20" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="css" value="1" />
-          <entry key="html" value="8" />
-          <entry key="js" value="8" />
+          <entry key="html" value="9" />
+          <entry key="js" value="9" />
           <entry key="svg" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CSS" value="1" />
-          <entry key="HTML" value="8" />
-          <entry key="JavaScript" value="8" />
+          <entry key="HTML" value="9" />
+          <entry key="JavaScript" value="9" />
           <entry key="SVG" value="2" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.54601604">
+    <splitter split-orientation="horizontal" split-proportion="0.5037129">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file pinned="false" current-in-tab="false">
+          <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/extraJs/renderer.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="546">
-                  <caret line="21" column="20" lean-forward="true" selection-start-line="21" selection-start-column="20" selection-end-line="21" selection-end-column="20" />
+                <state relative-caret-position="602">
+                  <caret line="362" column="38" lean-forward="true" selection-start-line="362" selection-start-column="38" selection-end-line="362" selection-end-column="38" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/views/editCategory.html">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="1120">
+                  <caret line="73" column="67" selection-start-line="73" selection-start-column="46" selection-end-line="73" selection-end-column="67" />
                 </state>
               </provider>
             </entry>
@@ -114,15 +123,6 @@
               </provider>
             </entry>
           </file>
-          <file pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/views/editAliment.html">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="312">
-                  <caret line="92" column="32" lean-forward="true" selection-start-line="92" selection-start-column="32" selection-end-line="92" selection-end-column="32" />
-                </state>
-              </provider>
-            </entry>
-          </file>
         </leaf>
       </split-first>
       <split-second>
@@ -130,8 +130,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/main.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="251">
-                  <caret line="785" selection-start-line="785" selection-end-line="785" />
+                <state relative-caret-position="336">
+                  <caret line="1108" column="32" selection-start-line="1108" selection-start-column="32" selection-end-line="1108" selection-end-column="32" />
                   <folding>
                     <element signature="n#!!doc" expanded="true" />
                   </folding>
@@ -174,6 +174,8 @@
       <find>categ</find>
       <find>ipcMain.sen</find>
       <find>clearCats</find>
+      <find>relo</find>
+      <find>editCategory</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -210,8 +212,9 @@
         <option value="$PROJECT_DIR$/views/accueil.html" />
         <option value="$PROJECT_DIR$/views/addCategory.html" />
         <option value="$PROJECT_DIR$/views/addAliment.html" />
-        <option value="$PROJECT_DIR$/extraJs/renderer.js" />
         <option value="$PROJECT_DIR$/views/editAliment.html" />
+        <option value="$PROJECT_DIR$/views/editCategory.html" />
+        <option value="$PROJECT_DIR$/extraJs/renderer.js" />
         <option value="$PROJECT_DIR$/main.js" />
       </list>
     </option>
@@ -233,7 +236,7 @@
     </packageJsonPaths>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="450" />
+    <option name="x" value="-8" />
     <option name="y" value="-8" />
     <option name="width" value="1278" />
     <option name="height" value="718" />
@@ -243,6 +246,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -280,30 +284,29 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="C:/xampp/htdocs/Annuaire" />
+    <property name="last_opened_file_path" value="L:/plan" />
     <property name="list.type.of.created.stylesheet" value="CSS" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\bourneun\Desktop\NodeJs\electron\CoursesFaciles\modele" />
-      <recent name="C:\Users\bourneun\Desktop\NodeJs\electron\CoursesFaciles\img" />
-      <recent name="C:\Users\bourneun\Desktop\NodeJs\electron\firstApp\views" />
-      <recent name="C:\Users\bourneun\Desktop\NodeJs\electron\firstApp" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\bourneun\Desktop\electron\courses_faciles\views" />
       <recent name="C:\Users\bourneun\Desktop\NodeJs\electron\CoursesFaciles\img" />
       <recent name="C:\Users\bourneun\Desktop\NodeJs\electron\CoursesFaciles\extraJs" />
+      <recent name="C:\Users\bourneun\Desktop\NodeJs\electron\firstApp" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\bourneun\Desktop\NodeJs\electron\CoursesFaciles\modele" />
+      <recent name="C:\Users\bourneun\Desktop\NodeJs\electron\CoursesFaciles\img" />
+      <recent name="C:\Users\bourneun\Desktop\NodeJs\electron\firstApp\views" />
       <recent name="C:\Users\bourneun\Desktop\NodeJs\electron\firstApp" />
     </key>
   </component>
@@ -349,16 +352,18 @@
       <workItem from="1563786650152" duration="5000000" />
       <workItem from="1563896737801" duration="553000" />
       <workItem from="1564053298943" duration="4595000" />
+      <workItem from="1564131132190" duration="4661000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="139346000" />
+    <option name="totallyTimeSpent" value="144007000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1369936" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.13859275" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="npm" order="2" side_tool="true" />
       <window_info id="Favorites" order="3" side_tool="true" />
@@ -469,31 +474,10 @@
     <entry file="file://$PROJECT_DIR$/img/cart_add_cat.svg">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/extraJs/entities/category.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="156">
-          <caret line="6" column="25" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/extraJs/entities/shopList.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="130">
           <caret line="5" column="26" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/addList.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="416">
-          <caret line="16" column="8" selection-start-line="16" selection-start-column="8" selection-end-line="18" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/editList.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1664">
-          <caret line="64" column="8" selection-start-line="64" selection-start-column="8" selection-end-line="71" selection-end-column="10" />
         </state>
       </provider>
     </entry>
@@ -511,17 +495,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/css/main.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="823">
-          <caret line="53" selection-start-line="53" selection-end-line="53" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/extraJs/entities/aliments.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="286">
           <caret line="11" column="26" selection-start-line="11" selection-start-column="26" selection-end-line="11" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/addList.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="416">
+          <caret line="16" column="8" selection-start-line="16" selection-start-column="8" selection-end-line="18" selection-end-column="12" />
         </state>
       </provider>
     </entry>
@@ -532,24 +516,52 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/extraJs/renderer.js">
+    <entry file="file://$PROJECT_DIR$/views/editList.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="546">
-          <caret line="21" column="20" lean-forward="true" selection-start-line="21" selection-start-column="20" selection-end-line="21" selection-end-column="20" />
+        <state relative-caret-position="1664">
+          <caret line="64" column="8" selection-start-line="64" selection-start-column="8" selection-end-line="71" selection-end-column="10" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/views/editAliment.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="312">
-          <caret line="92" column="32" lean-forward="true" selection-start-line="92" selection-start-column="32" selection-end-line="92" selection-end-column="32" />
+        <state relative-caret-position="286">
+          <caret line="11" column="27" selection-start-line="11" selection-start-column="27" selection-end-line="11" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/main.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="823">
+          <caret line="53" selection-start-line="53" selection-end-line="53" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/extraJs/entities/category.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="156">
+          <caret line="6" column="25" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/editCategory.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1120">
+          <caret line="73" column="67" selection-start-line="73" selection-start-column="46" selection-end-line="73" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/extraJs/renderer.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="602">
+          <caret line="362" column="38" lean-forward="true" selection-start-line="362" selection-start-column="38" selection-end-line="362" selection-end-column="38" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="251">
-          <caret line="785" selection-start-line="785" selection-end-line="785" />
+        <state relative-caret-position="336">
+          <caret line="1108" column="32" selection-start-line="1108" selection-start-column="32" selection-end-line="1108" selection-end-column="32" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>

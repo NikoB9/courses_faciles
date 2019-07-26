@@ -133,6 +133,7 @@ app.on('activate', function () {
     }
 });
 
+
 //Ajouter une fenetre
 function createListWindow() {
     //création de la fenêtre
@@ -194,6 +195,40 @@ function createAddCategoryWindow() {
     addCategoryWindow.on('close', function () {
         //addListWindow = null;
         addCategoryAlreadyInstencied = false;
+    })
+
+}
+
+
+//Fenetre : Modification de categorie
+function createEditCategoryWindow() {
+    //création de la fenêtre
+    editCategoryWindow = new BrowserWindow({
+        width: 400,
+        height:250,
+        title: 'Modification d\'une categorie',
+        webPreferences: {
+            nodeIntegration: true
+        },
+        transparent: true,
+        frame: false,
+        //icon: __dirname+'img/mainIco.svg'
+        icon: path.join(__dirname, '/img/mainIco.png')
+    });
+    //Insérer le code html
+    editCategoryWindow.loadURL(url.format(
+        {
+            pathname: path.join(__dirname, 'views/editCategory.html'),
+            protocol: 'file:',
+            slashes: true
+        }
+    ));
+    //
+    //addListWindow.webContents.openDevTools();
+
+    editCategoryWindow.on('close', function () {
+        //addListWindow = null;
+        editCategoryAlreadyInstencied = false;
     })
 
 }
@@ -513,6 +548,19 @@ ipcMain.on('user:create', function(e, login, pwd){
 
 ipcMain.on('delLists', function (e) {
     deleteAllLists(function(result){
+        //FERMETURE DES AUTRES FENETRES OUVERTES
+        if (rmListAlreadyInstencied){
+            rmListWindow.close();
+            rmListAlreadyInstencied = false;
+        }
+        if (editListAlreadyInstencied){
+            editListWindow.close();
+            editListAlreadyInstencied = false;
+        }
+        if (addListAlreadyInstencied){
+            addListWindow.close();
+            addListAlreadyInstencied = false;
+        }
         user.shoppingLists = [];
         if (result) mainWindow.webContents.send('deleteAllLists:true');
     });
@@ -700,6 +748,7 @@ ipcMain.on('addCat', function (e, idList) {
 
 ipcMain.on('closeAddCategoryWindow', function () {
     addCategoryWindow.close();
+    addCategoryAlreadyInstencied = false;
 });
 
 ipcMain.on('category:add', function (e, idList, nomCat) {
@@ -711,6 +760,57 @@ ipcMain.on('category:add', function (e, idList, nomCat) {
             mainWindow.webContents.send('add:categoy/ok', nomCat, idInsertion);
             addCategoryWindow.close();
             addCategoryAlreadyInstencied = false;
+        }
+    })
+})
+
+
+/**Modification**********/
+ipcMain.on('editCategory', function (e, idCat, idList) {
+    if (editCategoryAlreadyInstencied){
+        let message = "Une instance d'ajout est déjà en cours";
+        mainWindow.webContents.send('alerte',message);
+        editCategoryWindow.show();
+    }
+    else if (delCategoryAlreadyInstencied){
+        let message = "Veuillez fermer la fenêtre de suppression de catégorie avant d'ajouter un aliment";
+        mainWindow.webContents.send('alerte',message);
+        delCategoryWindow.show();
+    }else {
+        editCategoryAlreadyInstencied = true;
+        createEditCategoryWindow();
+
+        var indexOfShopList = user.shoppingLists.indexOf(user.shoppingLists.find(shopList => shopList.id == idList));
+        var indexOfCategory = user.shoppingLists[indexOfShopList].listCatgories.indexOf(user.shoppingLists[indexOfShopList].listCatgories.find(category => category.id == idCat));
+        var cat = user.shoppingLists[indexOfShopList].listCatgories[indexOfCategory];
+
+        //On attend que la fenêtre soit prête pour lui envoyer des données
+        editCategoryWindow.webContents.on('did-finish-load', () => {
+
+            editCategoryWindow.webContents.send('list:params', idCat, idList, cat);
+            //console.log("modif liste n°"+id+" : "+listAttributes.name+" ("+listAttributes.devise+")");
+        })
+    }
+});
+
+ipcMain.on('closeEditCategoryWindow', function () {
+    editCategoryAlreadyInstencied =false;
+    editCategoryWindow.close();
+});
+
+ipcMain.on('category:edit', function (e, idList, idCat, nomCat) {
+    var indexOfShopList = user.shoppingLists.indexOf(user.shoppingLists.find(shopList => shopList.id == idList));
+    var indexOfCategory = user.shoppingLists[indexOfShopList].listCatgories.indexOf(user.shoppingLists[indexOfShopList].listCatgories.find(category => category.id == idCat));
+
+    editCategory(nomCat, idCat, function (updateVerif) {
+        //console.log('id request = '+result)
+        if (updateVerif){
+
+            user.shoppingLists[indexOfShopList].listCatgories[indexOfCategory].name = nomCat;
+
+            mainWindow.webContents.send('edit:categoy/ok', idList, user);
+            editCategoryWindow.close();
+            editCategoryAlreadyInstencied = false;
         }
     })
 })
@@ -742,6 +842,7 @@ ipcMain.on('addAliment', function (e, catId, listId) {
 
 ipcMain.on('closeAddAlimentWindow', function () {
     addAlimentWindow.close();
+    addAlimentAlreadyInstencied = false;
 });
 
 ipcMain.on('aliment:add', function (e, idList, idCat, nomAliment, quantite, unitee, prixMax) {
@@ -794,6 +895,7 @@ ipcMain.on('editAliment', function (e, idAlim, idCat, listId) {
 
 ipcMain.on('closeEditAlimentWindow', function () {
     editAlimentWindow.close();
+    editAlimentAlreadyInstencied = false;
 });
 
 ipcMain.on('aliment:edit', function (e, idList, idCat, idAlim, nomAliment, quantite, unitee, prixMax) {
@@ -1001,3 +1103,19 @@ function editAliment(idAlim, nomAliment, quantite, unitee, prixMax, callback) {
 
 
 }
+
+function editCategory(nomCat, idCat, callback) {
+
+    var sql = "UPDATE categories SET `name` = ? WHERE id = ?"
+    connection.query(sql,
+        [nomCat, idCat],
+        function(error, results, fields){
+            if (error) throw error;
+
+            //console.log("name into sql : "+list);
+            return callback(results.affectedRows);
+        })
+
+
+}
+

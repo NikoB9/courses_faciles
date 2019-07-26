@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+
+    <!--Menu de navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">
+            <img src="../img/bill.svg" width="30" height="30">
+        </a>
+        <a class="navbar-brand" href="#">
+            <h5 class="titlePage">Modification d'une categorie</h5>
+        </a>
+        <div class="line" id="gestIcons">
+            <button type="button" class="btn tip" onclick="exitApp()">
+                <img class="btnClick" id="exitWindow" src="../img/close.svg" width="40" height="40">
+                <span><div class="tipText">Fermer la fenêtre</div></span>
+            </button>
+        </div>
+    </nav>
+
+    <div id="corps">
+      <form>
+          <div class="form-group" id="formAddList">
+
+              <!--<div class="nav">
+                <div class="inputAddList">-->
+                <input type="hidden" name="idListe" id="idListe">
+                <input type="hidden" name="idCat" id="idCat">
+
+                <label class="col-form-label col-form-label-lg" for="categoryName">Nom de la catégorie</label>
+                  <div class="form-row">
+                      <div class="form-group col-9">
+                          <input class="form-control form-control-lg inputClick" type="text" placeholder="" id="categoryName">
+                      </div>
+                      <div class="form-group col-3">
+                          <button type="submit" id="AddListBtn" class="btn btn-info btnClick"><img src="../img/check.svg" width="35" height="35"></button>
+                      </div>
+                  </div>
+              <!--</div>-->
+          </div>
+      </form>
+    </div>
+
+
+
+    <script>
+        const electron = require('electron');
+        const {ipcRenderer} = electron;
+
+        //Dire au main que la fenêtre a fini de charger
+        ipcRenderer.send('did-finish-load');
+        //REMPLISSAGE DU FORMULAIRE
+        ipcRenderer.on('list:params', function (event, idCat, idList, cat) {
+            document.getElementById('idListe').value = idList;
+            document.getElementById('idCat').value = idCat;
+            document.querySelector('#categoryName').value = cat.name;
+        })
+
+        const form = document.querySelector('form');
+        form.addEventListener('submit', submitForm);
+
+        function submitForm(e){
+            e.preventDefault();
+            const idList = document.querySelector('#idListe').value;
+            const idCat = document.querySelector('#idCat').value;
+            const nomCat = document.querySelector('#categoryName').value;
+            ipcRenderer.send('category:edit', idList, idCat, nomCat);
+        }
+
+        const closeBtn = document.querySelector('#exitWindow');
+        closeBtn.addEventListener('click', closeThisWindow);
+
+        function closeThisWindow(e) {
+            e.preventDefault();
+            ipcRenderer.send('closeEditCategoryWindow');
+        }
+    </script>
+</body>
+</html>
