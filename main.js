@@ -102,7 +102,7 @@ function createMainWindow() {
     });
 
     // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+    //mainWindow.webContents.openDevTools();
 
     //Construction du menu
     //const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
@@ -364,6 +364,68 @@ function createRemoveListWindow() {
     })
 }
 
+//Fenêtre de suppression d'un aliment
+function createRemoveAlimentWindow() {
+    //création de la fenêtre
+    delAlimentWindow = new BrowserWindow({
+        width: 450,
+        height:250,
+        title: 'Suppression d\'un aliment',
+        webPreferences: {
+            nodeIntegration: true
+        },
+        transparent: true,
+        frame: false,
+        //icon: __dirname+'img/mainIco.svg'
+        icon: path.join(__dirname, '/img/mainIco.png')
+    });
+    //Insérer le code html
+    delAlimentWindow.loadURL(url.format(
+        {
+            pathname: path.join(__dirname, 'views/delAliment.html'),
+            protocol: 'file:',
+            slashes: true
+        }
+    ));
+    //
+    //addListWindow.webContents.openDevTools();
+
+    delAlimentWindow.on('close', function () {
+        delAlimentAlreadyInstencied = false;
+    })
+}
+
+//Fenêtre de suppression d'une catégorie
+function createRemoveCategoryWindow() {
+    //création de la fenêtre
+    delCategoryWindow = new BrowserWindow({
+        width: 450,
+        height:250,
+        title: 'Suppression d\'une catégorie',
+        webPreferences: {
+            nodeIntegration: true
+        },
+        transparent: true,
+        frame: false,
+        //icon: __dirname+'img/mainIco.svg'
+        icon: path.join(__dirname, '/img/mainIco.png')
+    });
+    //Insérer le code html
+    delCategoryWindow.loadURL(url.format(
+        {
+            pathname: path.join(__dirname, 'views/delCategory.html'),
+            protocol: 'file:',
+            slashes: true
+        }
+    ));
+    //
+    //addListWindow.webContents.openDevTools();
+
+    delCategoryWindow.on('close', function () {
+        delCategoryAlreadyInstencied = false;
+    })
+}
+
 /**********QUITTER L APPLI*********/
 
 ipcMain.on('exitApp', function () {
@@ -543,7 +605,7 @@ ipcMain.on('user:create', function(e, login, pwd){
     });
 });
 
-/**********SUPPRESSION DE LISTES*********/
+/**********SUPPRESSION massive DE LISTES ou categories*********/
 
 
 ipcMain.on('delLists', function (e) {
@@ -563,6 +625,42 @@ ipcMain.on('delLists', function (e) {
         }
         user.shoppingLists = [];
         if (result) mainWindow.webContents.send('deleteAllLists:true');
+    });
+})
+
+ipcMain.on('delAllCats', function (e, idList) {
+    removeAllCategories(idList, function(result){
+        //FERMETURE DES AUTRES FENETRES OUVERTES LIES AU CATEGORIES
+        if (delAlimentAlreadyInstencied){
+            delAlimentWindow.close();
+            delAlimentAlreadyInstencied = false;
+        }
+        if (editAlimentAlreadyInstencied){
+            editAlimentWindow.close();
+            editAlimentAlreadyInstencied = false;
+        }
+        if (addAlimentAlreadyInstencied){
+            addAlimentWindow.close();
+            addAlimentAlreadyInstencied = false;
+        }
+
+        if (delCategoryAlreadyInstencied){
+            delCategoryWindow.close();
+            delCategoryAlreadyInstencied = false;
+        }
+        if (editCategoryAlreadyInstencied){
+            editCategoryWindow.close();
+            editCategoryAlreadyInstencied = false;
+        }
+        if (addCategoryAlreadyInstencied){
+            addCategoryWindow.close();
+            addCategoryAlreadyInstencied = false;
+        }
+
+        var indexOfShopList = user.shoppingLists.indexOf(user.shoppingLists.find(shopList => shopList.id == idList));
+
+        user.shoppingLists[indexOfShopList].listCatgories = [];
+        if (result) mainWindow.webContents.send('deleteAllCategories:true',idList);
     });
 })
 
@@ -656,7 +754,7 @@ ipcMain.on('list:remove', function (e, id) {
             mainWindow.webContents.send("list:remove/true", id);
             const newSP = user.shoppingLists.filter(shopList => shopList.id != id);
             user.shoppingLists = newSP;
-            console.log(user);
+            //console.log(user);
             rmListWindow.close();
             rmListAlreadyInstencied = false;
         }
@@ -757,7 +855,7 @@ ipcMain.on('category:add', function (e, idList, nomCat) {
         if (idInsertion != -1){
             var indexOfShopList = user.shoppingLists.indexOf(user.shoppingLists.find(shopList => shopList.id == idList));
             user.shoppingLists[indexOfShopList].listCatgories.push(new category(idInsertion, nomCat));
-            mainWindow.webContents.send('add:categoy/ok', nomCat, idInsertion);
+            mainWindow.webContents.send('add:categoy/ok', user, idList);
             addCategoryWindow.close();
             addCategoryAlreadyInstencied = false;
         }
@@ -811,6 +909,74 @@ ipcMain.on('category:edit', function (e, idList, idCat, nomCat) {
             mainWindow.webContents.send('edit:categoy/ok', idList, user);
             editCategoryWindow.close();
             editCategoryAlreadyInstencied = false;
+        }
+    })
+})
+
+
+/**Suppression**********/
+ipcMain.on('removeCategory', function (e, idCat, idList) {
+    if (delCategoryAlreadyInstencied){
+        let message = "Une instance de suppression est déjà en cours";
+        mainWindow.webContents.send('alerte',message);
+        delCategoryWindow.show();
+    }
+    else if (editCategoryAlreadyInstencied){
+        let message = "Veuillez fermer la fenêtre d'édition de catégorie avant d'ajouter un aliment";
+        mainWindow.webContents.send('alerte',message);
+        editCategoryWindow.show();
+    }
+    else if (delAlimentAlreadyInstencied){
+        let message = "Veuillez fermer la fenêtre de suppression d'aliment avant d'ajouter un aliment";
+        mainWindow.webContents.send('alerte',message);
+        delAlimentWindow.show();
+    }
+    else if (editAlimentAlreadyInstencied){
+        let message = "Veuillez fermer la fenêtre de modification d'aliment avant d'ajouter un aliment";
+        mainWindow.webContents.send('alerte',message);
+        editAlimentWindow.show();
+    }
+    else if (addAlimentAlreadyInstencied){
+        let message = "Veuillez fermer la fenêtre d'ajout d'aliment avant d'ajouter un aliment";
+        mainWindow.webContents.send('alerte',message);
+        addAlimentWindow.show();
+    }else {
+        delCategoryAlreadyInstencied = true;
+        createRemoveCategoryWindow();
+
+        var indexOfShopList = user.shoppingLists.indexOf(user.shoppingLists.find(shopList => shopList.id == idList));
+        var indexOfCategory = user.shoppingLists[indexOfShopList].listCatgories.indexOf(user.shoppingLists[indexOfShopList].listCatgories.find(category => category.id == idCat));
+        var cat = user.shoppingLists[indexOfShopList].listCatgories[indexOfCategory];
+
+        //On attend que la fenêtre soit prête pour lui envoyer des données
+        delCategoryWindow.webContents.on('did-finish-load', () => {
+
+            delCategoryWindow.webContents.send('list:params', idCat, idList, cat.name);
+            //console.log("modif liste n°"+id+" : "+listAttributes.name+" ("+listAttributes.devise+")");
+        })
+    }
+});
+
+ipcMain.on('closeRemoveCatWindow', function () {
+    delCategoryAlreadyInstencied =false;
+    delCategoryWindow.close();
+});
+
+ipcMain.on('cat:remove', function (e, idList, idCat) {
+    var indexOfShopList = user.shoppingLists.indexOf(user.shoppingLists.find(shopList => shopList.id == idList));
+
+    removeCategory(idCat, function (rmVerif) {
+
+        //console.log('id request = '+result)
+        if (rmVerif){
+
+            //Suppression d'une catégorie
+            const newListCat = user.shoppingLists[indexOfShopList].listCatgories.filter(category => category.id != idCat);
+            user.shoppingLists[indexOfShopList].listCatgories = newListCat;
+
+            mainWindow.webContents.send('remove:categoy/ok', idList, user);
+            delCategoryWindow.close();
+            delCategoryAlreadyInstencied = false;
         }
     })
 })
@@ -917,6 +1083,64 @@ ipcMain.on('aliment:edit', function (e, idList, idCat, idAlim, nomAliment, quant
             mainWindow.webContents.send('aliment:edit/ok', idList, user);
             editAlimentWindow.close();
             editAlimentAlreadyInstencied = false;
+        }
+    })
+});
+/**Supression************************/
+ipcMain.on('rmAliment', function (e, idAlim, idCat, listId) {
+    if (delAlimentAlreadyInstencied){
+        let message = "Une instance de suppression est déjà en cours";
+        mainWindow.webContents.send('alerte',message);
+        delAlimentWindow.show();
+    }
+    else if (editAlimentAlreadyInstencied){
+        let message = "Veuillez fermer la fenêtre d'édition d'aliment avant d'ajouter un aliment";
+        mainWindow.webContents.send('alerte',message);
+        editAlimentWindow.show();
+    }
+    else if (delCategoryAlreadyInstencied){
+        let message = "Veuillez fermer la fenêtre de suppression de catégorie avant d'ajouter un aliment";
+        mainWindow.webContents.send('alerte',message);
+        delCategoryWindow.show();
+    }else {
+        delAlimentAlreadyInstencied = true;
+        createRemoveAlimentWindow();
+
+        //On prepare l'aliment :
+        var indexOfShopList = user.shoppingLists.indexOf(user.shoppingLists.find(shopList => shopList.id == listId));
+        var indexOfCategory = user.shoppingLists[indexOfShopList].listCatgories.indexOf(user.shoppingLists[indexOfShopList].listCatgories.find(category => category.id == idCat));
+        var indexOfAliment = user.shoppingLists[indexOfShopList].listCatgories[indexOfCategory].listAliments.indexOf(user.shoppingLists[indexOfShopList].listCatgories[indexOfCategory].listAliments.find(aliments => aliments.id == idAlim));
+
+        var aliment = user.shoppingLists[indexOfShopList].listCatgories[indexOfCategory].listAliments[indexOfAliment];
+
+        //On attend que la fenêtre soit prête pour lui envoyer des données
+        delAlimentWindow.webContents.on('did-finish-load', () => {
+            delAlimentWindow.webContents.send('list:params', idAlim, idCat, listId, aliment.name);
+            //console.log("modif liste n°"+id+" : "+listAttributes.name+" ("+listAttributes.devise+")");
+        })
+    }
+});
+
+ipcMain.on('closeRemoveAlimentWindow', function () {
+    delAlimentWindow.close();
+    delAlimentAlreadyInstencied = false;
+});
+
+ipcMain.on('aliment:remove', function (e, listId, idCat, idAlim) {
+
+    //On prepare l'aliment :
+    var indexOfShopList = user.shoppingLists.indexOf(user.shoppingLists.find(shopList => shopList.id == listId));
+    var indexOfCategory = user.shoppingLists[indexOfShopList].listCatgories.indexOf(user.shoppingLists[indexOfShopList].listCatgories.find(category => category.id == idCat));
+
+    removeAliment(idAlim, function (delVerif) {
+        if (delVerif){
+            //Suppression de l'aliment
+            const newListAlim = user.shoppingLists[indexOfShopList].listCatgories[indexOfCategory].listAliments.filter(aliments => aliments.id != idAlim);
+            user.shoppingLists[indexOfShopList].listCatgories[indexOfCategory].listAliments = newListAlim;
+
+            mainWindow.webContents.send('aliment:remove/ok', listId, user);
+            delAlimentWindow.close();
+            delAlimentAlreadyInstencied = false;
         }
     })
 });
@@ -1104,6 +1328,21 @@ function editAliment(idAlim, nomAliment, quantite, unitee, prixMax, callback) {
 
 }
 
+function removeAliment(idAlim, callback) {
+
+    var sql = "DELETE FROM aliments WHERE id = ?";
+    connection.query(sql,
+        [idAlim],
+        function(error, results, fields){
+            if (error) throw error;
+
+            //console.log("name into sql : "+list);
+            return callback(results.affectedRows);
+        })
+
+
+}
+
 function editCategory(nomCat, idCat, callback) {
 
     var sql = "UPDATE categories SET `name` = ? WHERE id = ?"
@@ -1118,4 +1357,36 @@ function editCategory(nomCat, idCat, callback) {
 
 
 }
+
+function removeCategory(idCat, callback) {
+
+    var sql = "DELETE FROM categories WHERE id = ?"
+    connection.query(sql,
+        [idCat],
+        function(error, results, fields){
+            if (error) throw error;
+
+            //console.log("name into sql : "+list);
+            return callback(results.affectedRows);
+        })
+
+
+}
+
+
+function removeAllCategories(idList, callback) {
+
+    var sql = "DELETE FROM categories WHERE idSL = ?"
+    connection.query(sql,
+        [idList],
+        function(error, results, fields){
+            if (error) throw error;
+
+            //console.log("name into sql : "+list);
+            return callback(results.affectedRows);
+        })
+
+
+}
+
 

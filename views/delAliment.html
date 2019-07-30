@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+
+    <!--Menu de navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">
+            <img src="../img/bill.svg" width="30" height="30">
+        </a>
+        <a class="navbar-brand" href="#">
+            <h5 class="titlePage">Suppression d'un aliment</h5>
+        </a>
+        <div class="line" id="gestIcons">
+            <button type="button" class="btn tip" onclick="exitApp()">
+                <img class="btnClick" id="exitWindow" src="../img/close.svg" width="40" height="40">
+                <span><div class="tipText">Fermer la fenêtre</div></span>
+            </button>
+        </div>
+    </nav>
+
+    <div id="corps">
+      <form>
+          <div class="form-group" id="formDelAlim" style="text-align: center">
+
+                    <label class="col-form-label col-form-label-lg" for="nameAlim">Voulez-vous supprimer l'aliment&nbsp;</label>
+                    <b>"<span id="nameAlim"></span>"</b>&nbsp;?
+                    <div class="form-row">
+                        <div class="form-group col-12">
+                            <button type="submit" class="btn btn-danger btnClick">SUPPRIMER</button>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="idListe">
+                    <input type="hidden" id="idCat">
+                    <input type="hidden" id="idAlim">
+          </div>
+      </form>
+    </div>
+
+
+
+    <script>
+        //DECLARATION D USAGE
+        const electron = require('electron');
+        const {ipcRenderer} = electron;
+
+        //Dire au main que la fenêtre a fini de charger
+        ipcRenderer.send('did-finish-load');
+        //REMPLISSAGE DU FORMULAIRE
+        ipcRenderer.on('list:params', function (event, idAlim, idCat, listId, name) {
+            document.getElementById('nameAlim').innerText = name;
+            document.getElementById('idListe').value = listId;
+            document.getElementById('idCat').value = idCat;
+            document.getElementById('idAlim').value = idAlim;
+        })
+
+        //TRAITEMENT DU FORMULAIRE
+        const form = document.querySelector('form');
+        form.addEventListener('submit', submitForm);
+
+        function submitForm(e){
+            e.preventDefault();
+            const listId = document.querySelector('#idListe').value;
+            const idCat = document.querySelector('#idCat').value;
+            const idAlim = document.querySelector('#idAlim').value;
+            ipcRenderer.send('aliment:remove', listId, idCat, idAlim);
+        }
+
+        const closeBtn = document.querySelector('#exitWindow');
+        closeBtn.addEventListener('click', closeThisWindow);
+
+        function closeThisWindow(e) {
+            e.preventDefault();
+            ipcRenderer.send('closeRemoveAlimentWindow');
+        }
+    </script>
+</body>
+</html>

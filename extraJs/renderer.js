@@ -51,7 +51,7 @@ function addCat(idList){
 
 //Ajout d'une catégorie
 function clearCats(idList){
-    console.log("à faire");
+    ipcRenderer.send('delAllCats',idList);
 }
 
 //Edition d'un aliment
@@ -61,7 +61,7 @@ function editOneAliment(idAlim, idCat, listId){
 
 //Suppression d'un aliment
 function delOneAliment(idAlim, idCat, listId){
-    console.log("à faire");
+    ipcRenderer.send('rmAliment',idAlim, idCat, listId);
 }
 
 //Edition d'une categorie
@@ -71,7 +71,7 @@ function editOneCat(idCat, listId){
 
 //Suppression d'une categorie
 function delOneCat(idCat, listId){
-    console.log("à faire");
+    ipcRenderer.send('removeCategory', idCat, listId);
 }
 
 //Affichage d'un message.. Notamment d'erreur
@@ -114,6 +114,7 @@ function displayListWithUser(id, user){
     //Si pas de categories on propose à l'utilisateur d'en créer une facilement
     if (categories.length === 0) {
         document.getElementById('noCategories').style.display = "block";
+        document.getElementById('addCatBtn').setAttribute('onclick', 'addCat('+id+')');
     }
     //sinon on affiche les categories disponibles
     else {
@@ -255,6 +256,7 @@ function displayList(id){
 
 	document.getElementById('shopListsDic').style.display = "none";
     document.getElementById('categoriesList').style.display = "block";
+    document.getElementById('container-cards').innerText = "";
     document.getElementById('btnLists').style.display = "block";
 
     /**BOUTONS TOP MENU**/
@@ -272,77 +274,6 @@ function displayList(id){
         displayListWithUser(id, user);
     })
 }
-/************TRAITEMENT DES CATEGORIES************/
-ipcRenderer.on('add:category/ok', function (e, catName, listId) {
-    const container = document.createElement('div');
-    container.className = 'container-card';
-
-    sectionReceptive.appendChild(container);
-
-    const card = document.createElement('div');
-    card.className = 'card categorie_card';
-
-    container.appendChild(card);
-
-    const card_header = document.createElement('div');
-    card_header.className = 'card-header';
-
-    card.appendChild(card_header);
-
-    const title = document.createTextNode(
-        catName
-    );
-
-    card_header.appendChild(title);
-
-    const span = document.createElement('span');
-    span.className = 'badge badge-primary badge-pill';
-    /*const itemNumber = document.createTextNode(
-        "<img src='../img/edit.svg'>"
-    );*/
-    const editImg = document.createElement('img');
-    editImg.src = '../img/edit.svg';
-    editImg.width = 20;
-    editImg.height = 20;
-    editImg.className = 'btnClick';
-    editImg.setAttribute('onclick', 'editOneCat('+listId+')');
-
-    span.appendChild(editImg);
-
-    const space = document.createTextNode(" ");
-    span.appendChild(space);
-
-    const garbageImg = document.createElement('img');
-    garbageImg.src = '../img/garbage.svg';
-    garbageImg.width = 25;
-    garbageImg.height = 25;
-    garbageImg.className = 'btnClick';
-    //ONCLICK DELETE AVEC ID
-    garbageImg.setAttribute('onclick', 'delOneCat('+listId+')');
-
-    span.appendChild(garbageImg);
-
-    card_header.appendChild(span);
-
-    const card_body = document.createElement('div');
-    card_body.className = 'card-body card-body-custom';
-
-    card.appendChild(card_body);
-
-    const card_footer = document.createElement('div');
-    card_footer.className = 'card-footer btnClick categoryFooter';
-    card_footer.setAttribute('onclick', 'addAnAliment('+listId+')');
-    card.appendChild(card_footer);
-
-
-    const addAliment = document.createElement('img');
-    addAliment.src = '../img/cart_add_alim.svg';
-    addAliment.width = 30;
-    addAliment.height = 30;
-    addAliment.className = 'btnClick';
-    card_footer.appendChild(addAliment);
-
-})
 
 /************TRAITEMENT DES Aliments************/
 
@@ -356,11 +287,31 @@ ipcRenderer.on('aliment:edit/ok', function (e, listId, user) {
     displayListWithUser(listId, user);
 })
 
-/************TRAITEMENT édition DES Categories************/
+/**Suppression**********/
+ipcRenderer.on('aliment:remove/ok', function (e, listId, user) {
+    displayListWithUser(listId, user);
+})
+
+/************TRAITEMENT DES Categories************/
+
+/***Ajout****************/
+ipcRenderer.on('add:categoy/ok', function (e, user, listId) {
+    displayListWithUser(listId, user);
+})
 
 /**Modification**********/
 ipcRenderer.on('edit:categoy/ok', function (e, listId, user) {
     displayListWithUser(listId, user);
+})
+
+/**Suppression**********/
+ipcRenderer.on('remove:categoy/ok', function (e, listId, user) {
+    displayListWithUser(listId, user);
+})
+
+/**Suppression massive**********/
+ipcRenderer.on('deleteAllCategories:true', function (e, listId) {
+    displayList(listId);
 })
 
 /************Connexion************/
